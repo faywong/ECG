@@ -35,31 +35,41 @@ public class WaveformView extends View implements
 	private int mDecorBackgroundColor = 0xff0B0B61;
 	private int mGridBackgroundColor = 0xFFFCFDF1;
 	private int mGridColor = 0xFFE5B0B7;
+
 	private int mWaveformColor = 0xFFA29390;
 	private int mBackgroundRoundRadiusX = 12;
 	private int mBackgroundRoundRadiusY = 12;
 
 	// drawing level in x direction
-	private int mGridCellX = 30;
+	private int mGridCellX = 10;
 	// drawing level in y direction
-	private int mGridCellY = 10;
+	private int mGridCellY = 30;
 	// the text size of grid label
 	private int mLabelSize = 15;
 	// the color of grid label
-	private int mLabelColor = Color.WHITE;
+	private int mLabelColor = 0xff340000;
+	
+	private float mMaxXValue = 10.0f;
+	private float mMaxYValue = 30.0f;
+	private float mMinXValue = 0.0f;
+	private float mMinYValue = 0.0f;
+	private int mMaxVerticalLabelWidth = 0;
+	private int mMaxYLabelWidth = 0;
+	private int mMaxHorizontalLabelHeight = 0;
 
+	private float[] mWantedDataRegion;
 	private int width;
 	private int height;
 
-	public enum Config {
-		CFG_X_MIN, CFG_X_MAX, CFG_Y_MIN, CFG_Y_MAX, CFG_NUM
+	public enum Region {
+		REG_X_MIN, REG_X_MAX, REG_Y_MIN, REG_Y_MAX, REG_NUM
 	}
 
 	public enum Label {
 		LABEL_X, LABEL_Y, LABEL_NUM
 	}
 
-	private float[] mThresholds = new float[Config.CFG_NUM.ordinal()];
+	private float[] mThresholds = new float[Region.REG_NUM.ordinal()];
 	private String[] mLabels = new String[Label.LABEL_NUM.ordinal()];
 
 	public WaveformView(Context context, AttributeSet attrs, int defStyle) {
@@ -83,7 +93,7 @@ public class WaveformView extends View implements
 	}
 
 	public void init(Context context, AttributeSet attrs, int defStyle) {
-		for (int i = Config.CFG_X_MIN.ordinal(); i < Config.CFG_NUM.ordinal(); i++) {
+		for (int i = Region.REG_X_MIN.ordinal(); i < Region.REG_NUM.ordinal(); i++) {
 			// initialize these thresholds to invalid
 			mThresholds[i] = Float.NaN;
 		}
@@ -96,6 +106,17 @@ public class WaveformView extends View implements
 				R.styleable.WaveformView, defStyle, 0);
 		mGridCellX = a.getInteger(R.styleable.WaveformView_cellX, mGridCellX);
 		mGridCellY = a.getInteger(R.styleable.WaveformView_cellY, mGridCellY);
+		mMaxXValue = a.getFloat(R.styleable.WaveformView_maxXValue, mMaxXValue);
+		mMaxYValue = a.getFloat(R.styleable.WaveformView_maxYValue, mMaxYValue);
+		mMinXValue = a.getFloat(R.styleable.WaveformView_minXValue, mMinXValue);
+		mMinYValue = a.getFloat(R.styleable.WaveformView_minYValue, mMinYValue);
+
+		if (DEBUG) {
+			Log.d(TAG, "mMaxXValue:" + mMaxXValue + " mMaxYValue:" + mMaxYValue
+					+ " mMinXValue:" + mMinXValue + " mMinYValue:" + mMinYValue);
+		}
+		mWantedDataRegion = new float[] {mMinXValue, mMaxXValue, mMinYValue, mMaxYValue};
+		
 		mDecorBackgroundColor = a.getColor(
 				R.styleable.WaveformView_decorBackgroundColor,
 				mDecorBackgroundColor);
@@ -146,12 +167,12 @@ public class WaveformView extends View implements
 		}
 	}
 
-	public void setThreshold(Config key, float threshold) {
+	public void setThreshold(Region key, float threshold) {
 		switch (key) {
-		case CFG_X_MIN:
-		case CFG_X_MAX:
-		case CFG_Y_MIN:
-		case CFG_Y_MAX:
+		case REG_X_MIN:
+		case REG_X_MAX:
+		case REG_Y_MIN:
+		case REG_Y_MAX:
 			if (DEBUG) {
 				Log.d(TAG, "setThreshold(key" + key + " threshold:" + threshold
 						+ ")");
@@ -189,7 +210,7 @@ public class WaveformView extends View implements
 
 		// draw the waveform
 		if (null != mRenderer) {
-			mRenderer.render(mCanvas, mRawData, mRect);
+			mRenderer.render(mCanvas, mRawData, mRect, mWantedDataRegion);
 		}
 		canvas.drawBitmap(mCanvasBitmap, new Matrix(), null);
 	}
@@ -225,10 +246,7 @@ public class WaveformView extends View implements
 		int left = 0;
 		int top = 0;
 		// first drawing the labels
-		final Paint paint = new Paint();
-		paint.setColor(mLabelColor);
-		paint.setTypeface(Typeface.SANS_SERIF);
-		paint.setTextSize(mLabelSize);
+		Paint paint = getLabelPaint();
 		String label = mTitle;
 		int[] textDimension = calcTextDimension(paint, label);
 		if (null == textDimension || textDimension.length != 2) {
@@ -241,13 +259,22 @@ public class WaveformView extends View implements
 		mCanvas.drawText(label, width / 2 - textDimension[0] / 2, top, paint);
 		top += textDimension[1];
 
-		textDimension = calcTextDimension(paint, label);
-		if (null == textDimension || textDimension.length != 2) {
-			return;
-		}
+
 		// draw y label
 		label = mLabels[Label.LABEL_Y.ordinal()];
 		mCanvas.drawText(label, left, top, paint);
+		String yMaxLabel = Float.toString(mThresholds[Region.REG_Y_MAX.ordinal()]);
+		textDimension = calcTextDimension(paint, yMaxLabel);
+		if (null == textDimension || textDimension.length != 2) {
+			return;
+		}
+		mMaxYLabelWidth = textDimension[0];
+		textDimension = maxDimension(calcTextDimension(paint, label), textDimension);
+		if (null == textDimension || textDimension.length != 2) {
+			return;
+		}
+		mMaxVerticalLabelWidth = textDimension[0];
+		
 		left += textDimension[0];
 		top += textDimension[1];
 
@@ -260,11 +287,13 @@ public class WaveformView extends View implements
 		if (null == textDimension || textDimension.length != 2) {
 			return;
 		}
+		mMaxHorizontalLabelHeight = textDimension[1];
 		int right = width - textDimension[0] - mBackgroundRoundRadiusX;
 		int bottom = height - textDimension[1] - mBackgroundRoundRadiusY;
 		mCanvas.drawText(label, right, bottom, paint);
 
 		bottom -= 2 * textDimension[1];
+		
 		// draw the grid background
 		paint.setStyle(Paint.Style.FILL);
 		paint.setColor(mGridBackgroundColor);
@@ -272,25 +301,37 @@ public class WaveformView extends View implements
 
 		int totalGridWidth = right - left;
 		int totalGridHeight = bottom - top;
+		
 		// Store the rect for render drawing
 		mRect.set(left, top, totalGridWidth, totalGridHeight);
 
 		// draw the grid itself
-		// TODO:
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setColor(mGridColor);
 		float cellWidth = totalGridWidth / mGridCellX;
 		float cellHight = totalGridHeight / mGridCellY;
 
-		// draw horizontal lines
+		// draw label and vertical lines
 		for (int y = 0; y <= mGridCellY; y++) {
-			float ceil_y = Math.min(left + y * cellHight, bottom);
+			float ceil_y = Math.max(bottom - y * cellHight, top);
+			float verticalValue = mMinYValue + (mMaxYValue - mMinYValue) * y / mGridCellY;
+			String verticalLabel = Float.toString(verticalValue);
+			mCanvas.drawText(verticalLabel, left - mMaxYLabelWidth - 4 /*margin*/, ceil_y + mMaxHorizontalLabelHeight / 2, getLabelPaint());
 			mCanvas.drawLine(left, ceil_y, right, ceil_y, paint);
 		}
 
 		// draw vertical lines
 		for (int x = 0; x <= mGridCellX; x++) {
 			float ceil_x = Math.min(left + x * cellWidth, right);
+			float horizontalValue = mMinXValue + (mMaxXValue - mMinXValue) * x / mGridCellX;
+			String horizontalLabel = Float.toString(horizontalValue);
+			int xOffset = 0;
+			textDimension = calcTextDimension(getLabelPaint(), horizontalLabel);
+			if (null != textDimension && textDimension.length == 2) {
+				xOffset = textDimension[0] / 2;
+			}
+			int horizontalLableY = bottom + mMaxHorizontalLabelHeight + 2 /*margin*/;
+			mCanvas.drawText(horizontalLabel, (int)ceil_x - xOffset, horizontalLableY, getLabelPaint());
 			mCanvas.drawLine(ceil_x, top, ceil_x, bottom, paint);
 		}
 	}
@@ -304,7 +345,21 @@ public class WaveformView extends View implements
 		paint.getTextBounds(text, 0, text.length(), rect);
 		return new int[] { rect.width(), rect.height() };
 	}
+	
+	private static int[] maxDimension(int[] first, int[] second) {
+		if (first == null || first.length != 2 || second == null || second.length != 2) {
+			return null;
+		}
+		return new int[] { Math.max(first[0], second[0]), Math.max(first[1], second[1])};
+	}
 
+	private Paint getLabelPaint() {
+		Paint paint = new Paint();
+		paint.setColor(mLabelColor);
+		paint.setTypeface(Typeface.SANS_SERIF);
+		paint.setTextSize(mLabelSize);
+		return paint;
+	}
 	/**
 	 * Pass rightly captured raw data to this view
 	 */

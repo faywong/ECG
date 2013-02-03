@@ -9,17 +9,18 @@
         android:id="@+id/waveform"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#FFE6E6E6" 
-        ekg:cellX="30"
-        ekg:cellY="10"
+        android:background="#FFE6E6E6"
+        ekg:cellX="10"
+        ekg:cellY="30"
         ekg:decorBackgroundColor="#ffFEF9D9"
-        ekg:labelColor="#ff340000"
-        ekg:labelSize="15"
         ekg:decorBackgroundRadiusX="14"
         ekg:decorBackgroundRadiusY="14"
-        ekg:title="Hello world!"
+        ekg:labelColor="#ff340000"
+        ekg:labelSize="15"
+        ekg:maxXValue="10.0"
+        ekg:maxYValue="30.0"
+        ekg:title="Faywong's ECG"
         ekg:xAxislabel="faywongx"
-        ekg:yAxislabel="faywongy"
-        />
-		
+        ekg:yAxislabel="faywongy" />
+
 </LinearLayout>

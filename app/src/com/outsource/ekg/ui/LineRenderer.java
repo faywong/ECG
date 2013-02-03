@@ -8,10 +8,7 @@ import android.util.Log;
 
 public class LineRenderer extends Renderer {
 	private Paint mPaint;
-	private Paint mFlashPaint;
 	private boolean mCycleColor;
-	private float amplitude = 0;
-
 	/**
 	 * Renders the audio data onto a line. The line flashes on prominent beats
 	 * 
@@ -39,12 +36,11 @@ public class LineRenderer extends Renderer {
 	public LineRenderer(Paint paint, Paint flashPaint, boolean cycleColor) {
 		super();
 		mPaint = paint;
-		mFlashPaint = flashPaint;
 		mCycleColor = cycleColor;
 	}
 
 	@Override
-	public void onRender(Canvas canvas, RawData data, Rect rect) {
+	public void onRender(Canvas canvas, RawData data, Rect rect, float[] region) {
 		if (mCycleColor) {
 			cycleColor();
 		}
@@ -68,7 +64,6 @@ public class LineRenderer extends Renderer {
 			accumulator += Math.abs(data.bytes[i]);
 		}
 
-		float amp = accumulator / (128 * data.bytes.length);
 		/*
 		 * if(amp > amplitude) { // Amplitude is bigger than normal, make a
 		 * prominent line amplitude = amp; canvas.drawLines(mPoints,
@@ -79,7 +74,7 @@ public class LineRenderer extends Renderer {
 	}
 
 	@Override
-	public void onRender(Canvas canvas, FFTData data, Rect rect) {
+	public void onRender(Canvas canvas, FFTData data, Rect rect, float[] region) {
 		// Do nothing, we only display audio data
 	}
 

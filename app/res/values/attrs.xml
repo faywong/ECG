@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-Your copyright declaration here
--->
+<!-- Your copyright declaration here -->
 
 <resources>
 
-    <!-- WaveformView specific attributes. These attributes are used to customize
-         a WaveformView view in XML files. -->
+    <!--
+         WaveformView specific attributes. These attributes are used to customize
+         a WaveformView view in XML files.
+    -->
     <declare-styleable name="WaveformView">
+
         <!-- The cell number of a grid in x direction . -->
         <attr name="cellX" format="integer" />
         <!-- The cell number of a grid in y direction . -->
         <attr name="cellY" format="integer" />
+        <!-- The min. value of horizontal dimension . -->
+        <attr name="minXValue" format="float" />
+        <!-- The min. value of vertical dimension . -->
+        <attr name="minYValue" format="float" />
+        <!-- The max. value of horizontal dimension . -->
+        <attr name="maxXValue" format="float" />
+        <!-- The max. value of vertical dimension . -->
+        <attr name="maxYValue" format="float" />
+
         <!-- The color of the decorate background. -->
         <attr name="decorBackgroundColor" format="color" />
         <!-- The color of the grid background. -->
@@ -27,11 +37,12 @@ Your copyright declaration here
         <attr name="xAxislabel" format="string" />
         <!-- The label of y axis . -->
         <attr name="yAxislabel" format="string" />
-        <!-- The x radius of the decorate background round .  -->
+        <!-- The x radius of the decorate background round . -->
         <attr name="decorBackgroundRadiusX" format="integer" />
-        <!-- The y radius of the decorate background round .  -->
+        <!-- The y radius of the decorate background round . -->
         <attr name="decorBackgroundRadiusY" format="integer" />
         <!-- The title of the Waveform diagramm . -->
         <attr name="title" format="string" />
     </declare-styleable>
+
 </resources>
