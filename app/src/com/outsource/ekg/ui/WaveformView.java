@@ -48,6 +48,9 @@ public class WaveformView extends View implements
 	// the color of grid label
 	private int mLabelColor = Color.WHITE;
 
+	private int width;
+	private int height;
+
 	public enum Config {
 		CFG_X_MIN, CFG_X_MAX, CFG_Y_MIN, CFG_Y_MAX, CFG_NUM
 	}
@@ -72,6 +75,13 @@ public class WaveformView extends View implements
 		this(context, null, 0);
 	}
 
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		this.width = w;
+		this.height = h;
+		super.onSizeChanged(w, h, oldw, oldh);
+	}
+
 	public void init(Context context, AttributeSet attrs, int defStyle) {
 		for (int i = Config.CFG_X_MIN.ordinal(); i < Config.CFG_NUM.ordinal(); i++) {
 			// initialize these thresholds to invalid
@@ -86,16 +96,29 @@ public class WaveformView extends View implements
 				R.styleable.WaveformView, defStyle, 0);
 		mGridCellX = a.getInteger(R.styleable.WaveformView_cellX, mGridCellX);
 		mGridCellY = a.getInteger(R.styleable.WaveformView_cellY, mGridCellY);
-		mDecorBackgroundColor = a.getColor(R.styleable.WaveformView_decorBackgroundColor, mDecorBackgroundColor);
-		mGridBackgroundColor = a.getColor(R.styleable.WaveformView_gridBackgroundColor, mGridBackgroundColor);
+		mDecorBackgroundColor = a.getColor(
+				R.styleable.WaveformView_decorBackgroundColor,
+				mDecorBackgroundColor);
+		mGridBackgroundColor = a.getColor(
+				R.styleable.WaveformView_gridBackgroundColor,
+				mGridBackgroundColor);
 		mGridColor = a.getColor(R.styleable.WaveformView_gridColor, mGridColor);
-		mWaveformColor = a.getColor(R.styleable.WaveformView_waveformColor, mWaveformColor);
-		mLabelColor = a.getColor(R.styleable.WaveformView_labelColor, mLabelColor);
-		mLabelSize = a.getInteger(R.styleable.WaveformView_labelSize, mLabelSize);
-		mLabels[Label.LABEL_X.ordinal()] = a.getString(R.styleable.WaveformView_xAxislabel);
-		mLabels[Label.LABEL_Y.ordinal()] = a.getString(R.styleable.WaveformView_yAxislabel);
-		mBackgroundRoundRadiusX = a.getInteger(R.styleable.WaveformView_decorBackgroundRadiusX, mBackgroundRoundRadiusX);
-		mBackgroundRoundRadiusY = a.getInteger(R.styleable.WaveformView_decorBackgroundRadiusY, mBackgroundRoundRadiusY);
+		mWaveformColor = a.getColor(R.styleable.WaveformView_waveformColor,
+				mWaveformColor);
+		mLabelColor = a.getColor(R.styleable.WaveformView_labelColor,
+				mLabelColor);
+		mLabelSize = a.getInteger(R.styleable.WaveformView_labelSize,
+				mLabelSize);
+		mLabels[Label.LABEL_X.ordinal()] = a
+				.getString(R.styleable.WaveformView_xAxislabel);
+		mLabels[Label.LABEL_Y.ordinal()] = a
+				.getString(R.styleable.WaveformView_yAxislabel);
+		mBackgroundRoundRadiusX = a.getInteger(
+				R.styleable.WaveformView_decorBackgroundRadiusX,
+				mBackgroundRoundRadiusX);
+		mBackgroundRoundRadiusY = a.getInteger(
+				R.styleable.WaveformView_decorBackgroundRadiusY,
+				mBackgroundRoundRadiusY);
 		mTitle = a.getString(R.styleable.WaveformView_title);
 		a.recycle();
 	}
@@ -153,12 +176,9 @@ public class WaveformView extends View implements
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 
-		// Create canvas once we're ready to draw
-		mRect.set(0, 0, getWidth(), getHeight());
-
 		if (mCanvasBitmap == null) {
-			mCanvasBitmap = Bitmap.createBitmap(canvas.getWidth(),
-					canvas.getHeight(), Bitmap.Config.ARGB_8888);
+			mCanvasBitmap = Bitmap.createBitmap(width, height,
+					Bitmap.Config.ARGB_8888);
 		}
 		if (mCanvas == null) {
 			mCanvas = new Canvas(mCanvasBitmap);
@@ -174,6 +194,7 @@ public class WaveformView extends View implements
 		canvas.drawBitmap(mCanvasBitmap, new Matrix(), null);
 	}
 
+	// the outer decorate round rectangle
 	private void drawOuterRoundRect() {
 		if (null == mCanvas) {
 			return;
@@ -191,12 +212,16 @@ public class WaveformView extends View implements
 				mBackgroundRoundRadiusY, paint);
 	}
 
-	private int[] drawGridAndLabels() {
+	private void drawGridAndLabels() {
 		if (null == mCanvas) {
-			return null;
+			return;
 		}
-		int width = mCanvas.getWidth();
-		int height = mCanvas.getHeight();
+		int width = mCanvasBitmap.getWidth();
+		int height = mCanvasBitmap.getHeight();
+		if (DEBUG) {
+			Log.d(TAG, "when drawGridAndLabels() width:" + width + " height:"
+					+ height);
+		}
 		int left = 0;
 		int top = 0;
 		// first drawing the labels
@@ -207,7 +232,7 @@ public class WaveformView extends View implements
 		String label = mTitle;
 		int[] textDimension = calcTextDimension(paint, label);
 		if (null == textDimension || textDimension.length != 2) {
-			return null;
+			return;
 		}
 		left += mBackgroundRoundRadiusX;
 		top += mBackgroundRoundRadiusY;
@@ -218,33 +243,56 @@ public class WaveformView extends View implements
 
 		textDimension = calcTextDimension(paint, label);
 		if (null == textDimension || textDimension.length != 2) {
-			return null;
+			return;
 		}
 		// draw y label
 		label = mLabels[Label.LABEL_Y.ordinal()];
 		mCanvas.drawText(label, left, top, paint);
 		left += textDimension[0];
 		top += textDimension[1];
-		
+
 		// draw x label
 		label = mLabels[Label.LABEL_X.ordinal()];
+		if (DEBUG) {
+			Log.d(TAG, "The label x is " + label);
+		}
 		textDimension = calcTextDimension(paint, label);
 		if (null == textDimension || textDimension.length != 2) {
-			return null;
+			return;
 		}
 		int right = width - textDimension[0] - mBackgroundRoundRadiusX;
 		int bottom = height - textDimension[1] - mBackgroundRoundRadiusY;
 		mCanvas.drawText(label, right, bottom, paint);
-		
+
+		bottom -= 2 * textDimension[1];
 		// draw the grid background
 		paint.setStyle(Paint.Style.FILL);
 		paint.setColor(mGridBackgroundColor);
-		mCanvas.drawRect(left, top, width - mBackgroundRoundRadiusX, height
-				- mBackgroundRoundRadiusY, paint);
-		
+		mCanvas.drawRect(left, top, right, bottom, paint);
+
+		int totalGridWidth = right - left;
+		int totalGridHeight = bottom - top;
+		// Store the rect for render drawing
+		mRect.set(left, top, totalGridWidth, totalGridHeight);
+
 		// draw the grid itself
 		// TODO:
-		return new int[] { left, top, right, bottom};
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setColor(mGridColor);
+		float cellWidth = totalGridWidth / mGridCellX;
+		float cellHight = totalGridHeight / mGridCellY;
+
+		// draw horizontal lines
+		for (int y = 0; y <= mGridCellY; y++) {
+			float ceil_y = Math.min(left + y * cellHight, bottom);
+			mCanvas.drawLine(left, ceil_y, right, ceil_y, paint);
+		}
+
+		// draw vertical lines
+		for (int x = 0; x <= mGridCellX; x++) {
+			float ceil_x = Math.min(left + x * cellWidth, right);
+			mCanvas.drawLine(ceil_x, top, ceil_x, bottom, paint);
+		}
 	}
 
 	private static int[] calcTextDimension(Paint paint, String text) {

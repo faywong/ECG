@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, main!</string>
-    <string name="app_name">myDraw</string>
+    <string name="app_name">EkgClient</string>
 </resources>
