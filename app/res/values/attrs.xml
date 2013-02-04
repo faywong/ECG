@@ -13,15 +13,17 @@
         <attr name="cellX" format="integer" />
         <!-- The cell number of a grid in y direction . -->
         <attr name="cellY" format="integer" />
-        <!-- The min. value of horizontal dimension . -->
+        <!-- The min. value in horizontal direction . -->
         <attr name="minXValue" format="float" />
-        <!-- The min. value of vertical dimension . -->
+        <!-- The min. value in vertical direction . -->
         <attr name="minYValue" format="float" />
-        <!-- The max. value of horizontal dimension . -->
+        <!-- The max. value in horizontal direction . -->
         <attr name="maxXValue" format="float" />
-        <!-- The max. value of vertical dimension . -->
+        <!-- The max. value in vertical direction . -->
         <attr name="maxYValue" format="float" />
-
+        <!-- The x velocity in horizontal direction, the unit is some cell per point. -->
+        <attr name="xVelocity" format="float" />
+        
         <!-- The color of the decorate background. -->
         <attr name="decorBackgroundColor" format="color" />
         <!-- The color of the grid background. -->

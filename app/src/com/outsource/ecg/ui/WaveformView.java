@@ -1,27 +1,27 @@
-package com.outsource.ekg.ui;
+package com.outsource.ecg.ui;
 
-import com.outsource.ekg.defs.IEKGMsgParser;
-import com.outsource.ekg.defs.IEKGMsgSegment;
+import com.outsource.ecg.defs.IECGMsgParser;
+import com.outsource.ecg.defs.IECGMsgSegment;
+import com.outsource.ecg.ui.Renderer.RenderCfg;
+import com.outsource.ecg.ui.Renderer.RenderHelper;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.Paint.FontMetrics;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import com.outsource.ekg.R;
+import com.outsource.ecg.R;
 
 public class WaveformView extends View implements
-		IEKGMsgParser.OnDataCaptureListener {
+		IECGMsgParser.OnDataCaptureListener, RenderHelper {
 	private static final boolean DEBUG = true;
 	private static final String TAG = "WaveformView";
 
@@ -31,11 +31,14 @@ public class WaveformView extends View implements
 	private Bitmap mCanvasBitmap;
 	private Canvas mCanvas;
 	private Renderer mRenderer;
+	private Matrix mMatrix = new Matrix();
 	private String mTitle;
 	private int mDecorBackgroundColor = 0xff0B0B61;
 	private int mGridBackgroundColor = 0xFFFCFDF1;
 	private int mGridColor = 0xFFE5B0B7;
-
+	
+	/* the grid & labels should be rendered only when most needed */
+	private boolean mInitialized = false;
 	private int mWaveformColor = 0xFFA29390;
 	private int mBackgroundRoundRadiusX = 12;
 	private int mBackgroundRoundRadiusY = 12;
@@ -49,18 +52,26 @@ public class WaveformView extends View implements
 	// the color of grid label
 	private int mLabelColor = 0xff340000;
 	
+	// store the cell size info, NO. of cells in vertical/horizontal direction
+	private float[] mCellInfo = null;
+	
+	private int [] mGridSize = null;
 	private float mMaxXValue = 10.0f;
 	private float mMaxYValue = 30.0f;
 	private float mMinXValue = 0.0f;
 	private float mMinYValue = 0.0f;
-	private int mMaxVerticalLabelWidth = 0;
+	private float mXVelocity = 0.2f;
+	/*
+	 * The value represent range per cell(in x/y direction)
+	 */
+	private float[] mValueDensity;
 	private int mMaxYLabelWidth = 0;
 	private int mMaxHorizontalLabelHeight = 0;
 
-	private float[] mWantedDataRegion;
+	private float[] mInterestedDataRegion;
 	private int width;
 	private int height;
-
+	private RenderCfg mRenderConfig = null;
 	public enum Region {
 		REG_X_MIN, REG_X_MAX, REG_Y_MIN, REG_Y_MAX, REG_NUM
 	}
@@ -110,13 +121,17 @@ public class WaveformView extends View implements
 		mMaxYValue = a.getFloat(R.styleable.WaveformView_maxYValue, mMaxYValue);
 		mMinXValue = a.getFloat(R.styleable.WaveformView_minXValue, mMinXValue);
 		mMinYValue = a.getFloat(R.styleable.WaveformView_minYValue, mMinYValue);
+		mXVelocity = a.getFloat(R.styleable.WaveformView_xVelocity, mXVelocity);
+		mValueDensity = new float[] { (mMaxXValue - mMinXValue) / mGridCellX, (mMaxYValue - mMinYValue) / mGridCellY};
 
 		if (DEBUG) {
 			Log.d(TAG, "mMaxXValue:" + mMaxXValue + " mMaxYValue:" + mMaxYValue
-					+ " mMinXValue:" + mMinXValue + " mMinYValue:" + mMinYValue);
+					+ " mMinXValue:" + mMinXValue + " mMinYValue:" + mMinYValue
+					+ " mXVelocity:" + mXVelocity);
 		}
-		mWantedDataRegion = new float[] {mMinXValue, mMaxXValue, mMinYValue, mMaxYValue};
-		
+		mInterestedDataRegion = new float[] { mMinXValue, mMaxXValue, mMinYValue,
+				mMaxYValue };
+
 		mDecorBackgroundColor = a.getColor(
 				R.styleable.WaveformView_decorBackgroundColor,
 				mDecorBackgroundColor);
@@ -147,6 +162,7 @@ public class WaveformView extends View implements
 	public void setRenderer(Renderer renderer) {
 		if (mRenderer == null && renderer != null) {
 			mRenderer = renderer;
+			mRenderer.setRenderHelper(this);
 		}
 	}
 
@@ -205,14 +221,20 @@ public class WaveformView extends View implements
 			mCanvas = new Canvas(mCanvasBitmap);
 		}
 
-		drawOuterRoundRect();
-		drawGridAndLabels();
+		if (!mInitialized) {
+			drawOuterRoundRect();
+			drawGridAndLabels();
+			if (null == mRenderConfig) {
+				mRenderConfig = new RenderCfg(mCanvas, mRect, mInterestedDataRegion, mCellInfo, mValueDensity, mGridSize, mXVelocity);
+			}
+			mInitialized = mRenderer.init(mRenderConfig);
+		}
 
 		// draw the waveform
 		if (null != mRenderer) {
-			mRenderer.render(mCanvas, mRawData, mRect, mWantedDataRegion);
+			mRenderer.render(mRawData);
 		}
-		canvas.drawBitmap(mCanvasBitmap, new Matrix(), null);
+		canvas.drawBitmap(mCanvasBitmap, mMatrix, null);
 	}
 
 	// the outer decorate round rectangle
@@ -237,11 +259,9 @@ public class WaveformView extends View implements
 		if (null == mCanvas) {
 			return;
 		}
-		int width = mCanvasBitmap.getWidth();
-		int height = mCanvasBitmap.getHeight();
 		if (DEBUG) {
-			Log.d(TAG, "when drawGridAndLabels() width:" + width + " height:"
-					+ height);
+			Log.d(TAG, "when drawGridAndLabels() width:" + this.width + " height:"
+					+ this.height);
 		}
 		int left = 0;
 		int top = 0;
@@ -259,22 +279,21 @@ public class WaveformView extends View implements
 		mCanvas.drawText(label, width / 2 - textDimension[0] / 2, top, paint);
 		top += textDimension[1];
 
-
 		// draw y label
 		label = mLabels[Label.LABEL_Y.ordinal()];
 		mCanvas.drawText(label, left, top, paint);
-		String yMaxLabel = Float.toString(mThresholds[Region.REG_Y_MAX.ordinal()]);
+		String yMaxLabel = Float.toString(mThresholds[Region.REG_Y_MAX
+				.ordinal()]);
 		textDimension = calcTextDimension(paint, yMaxLabel);
 		if (null == textDimension || textDimension.length != 2) {
 			return;
 		}
 		mMaxYLabelWidth = textDimension[0];
-		textDimension = maxDimension(calcTextDimension(paint, label), textDimension);
+		textDimension = maxDimension(calcTextDimension(paint, label),
+				textDimension);
 		if (null == textDimension || textDimension.length != 2) {
 			return;
 		}
-		mMaxVerticalLabelWidth = textDimension[0];
-		
 		left += textDimension[0];
 		top += textDimension[1];
 
@@ -289,11 +308,11 @@ public class WaveformView extends View implements
 		}
 		mMaxHorizontalLabelHeight = textDimension[1];
 		int right = width - textDimension[0] - mBackgroundRoundRadiusX;
-		int bottom = height - textDimension[1] - mBackgroundRoundRadiusY;
+		int bottom = height - mBackgroundRoundRadiusY;
 		mCanvas.drawText(label, right, bottom, paint);
 
-		bottom -= 2 * textDimension[1];
-		
+		bottom -= 2.5f * textDimension[1];
+
 		// draw the grid background
 		paint.setStyle(Paint.Style.FILL);
 		paint.setColor(mGridBackgroundColor);
@@ -301,37 +320,45 @@ public class WaveformView extends View implements
 
 		int totalGridWidth = right - left;
 		int totalGridHeight = bottom - top;
-		
+
 		// Store the rect for render drawing
-		mRect.set(left, top, totalGridWidth, totalGridHeight);
+		mRect.set(left, top, right, bottom);
 
 		// draw the grid itself
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setColor(mGridColor);
 		float cellWidth = totalGridWidth / mGridCellX;
 		float cellHight = totalGridHeight / mGridCellY;
-
-		// draw label and vertical lines
+		if (mCellInfo == null && mGridSize == null) {
+			mCellInfo = new float[] { cellWidth, cellHight };
+			mGridSize = new int[] { mGridCellX, mGridCellY };
+		}
+		// draw the grid itself step1: draw vertical label and lines
 		for (int y = 0; y <= mGridCellY; y++) {
 			float ceil_y = Math.max(bottom - y * cellHight, top);
-			float verticalValue = mMinYValue + (mMaxYValue - mMinYValue) * y / mGridCellY;
+			float verticalValue = mMinYValue + (mMaxYValue - mMinYValue) * y
+					/ mGridCellY;
 			String verticalLabel = Float.toString(verticalValue);
-			mCanvas.drawText(verticalLabel, left - mMaxYLabelWidth - 4 /*margin*/, ceil_y + mMaxHorizontalLabelHeight / 2, getLabelPaint());
+			mCanvas.drawText(verticalLabel,
+					left - mMaxYLabelWidth - 4 /* margin */, ceil_y
+							+ mMaxHorizontalLabelHeight / 2, getLabelPaint());
 			mCanvas.drawLine(left, ceil_y, right, ceil_y, paint);
 		}
 
-		// draw vertical lines
+		// draw the grid itself step2: draw horizontal label & lines
 		for (int x = 0; x <= mGridCellX; x++) {
 			float ceil_x = Math.min(left + x * cellWidth, right);
-			float horizontalValue = mMinXValue + (mMaxXValue - mMinXValue) * x / mGridCellX;
+			float horizontalValue = mMinXValue + (mMaxXValue - mMinXValue) * x
+					/ mGridCellX;
 			String horizontalLabel = Float.toString(horizontalValue);
 			int xOffset = 0;
 			textDimension = calcTextDimension(getLabelPaint(), horizontalLabel);
 			if (null != textDimension && textDimension.length == 2) {
 				xOffset = textDimension[0] / 2;
 			}
-			int horizontalLableY = bottom + mMaxHorizontalLabelHeight + 2 /*margin*/;
-			mCanvas.drawText(horizontalLabel, (int)ceil_x - xOffset, horizontalLableY, getLabelPaint());
+			int horizontalLableY = bottom + mMaxHorizontalLabelHeight + 2 /* margin */;
+			mCanvas.drawText(horizontalLabel, (int) ceil_x - xOffset,
+					horizontalLableY, getLabelPaint());
 			mCanvas.drawLine(ceil_x, top, ceil_x, bottom, paint);
 		}
 	}
@@ -340,17 +367,18 @@ public class WaveformView extends View implements
 		if (paint == null || text == null) {
 			return null;
 		}
-		FontMetrics tp = paint.getFontMetrics();
 		Rect rect = new Rect();
 		paint.getTextBounds(text, 0, text.length(), rect);
 		return new int[] { rect.width(), rect.height() };
 	}
-	
+
 	private static int[] maxDimension(int[] first, int[] second) {
-		if (first == null || first.length != 2 || second == null || second.length != 2) {
+		if (first == null || first.length != 2 || second == null
+				|| second.length != 2) {
 			return null;
 		}
-		return new int[] { Math.max(first[0], second[0]), Math.max(first[1], second[1])};
+		return new int[] { Math.max(first[0], second[0]),
+				Math.max(first[1], second[1]) };
 	}
 
 	private Paint getLabelPaint() {
@@ -360,13 +388,17 @@ public class WaveformView extends View implements
 		paint.setTextSize(mLabelSize);
 		return paint;
 	}
+
 	/**
 	 * Pass rightly captured raw data to this view
 	 */
 	@Override
-	public void onWaveFormDataCaptured(byte[] bytes, int format) {
+	public void onWaveFormDataCaptured(float[] data, int format) {
 		// TODO Auto-generated method stub
-		mRawData.bytes = bytes;
+		mRawData.data = data;
+		if (DEBUG) {
+			Log.d(TAG, "onWaveFormDataCaptured");
+		}
 		invalidate();
 	}
 
@@ -374,8 +406,18 @@ public class WaveformView extends View implements
 	 * Pass a newly found segment to this view
 	 */
 	@Override
-	public void onNewSegmentFound(IEKGMsgSegment segment) {
+	public void onNewSegmentFound(IECGMsgSegment segment) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void redraw(int region) {
+		// TODO Auto-generated method stub
+		switch(region) {
+		case RenderHelper.REGION_GRID_BACKGROUND | RenderHelper.REGION_GRID_ITSELF | RenderHelper.REGION_GRID_LABELS:
+			drawGridAndLabels();
+			break;
+		}
 	}
 }

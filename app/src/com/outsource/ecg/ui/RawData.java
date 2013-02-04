@@ -1,11 +1,11 @@
-package com.outsource.ekg.ui;
+package com.outsource.ecg.ui;
 
 // Data class to explicitly indicate that these bytes are raw data
 public class RawData {
-	public byte[] bytes = null;
+	public float[] data = null;
 
-	public RawData(byte[] bytes) {
-		this.bytes = bytes;
+	public RawData(float[] bytes) {
+		this.data = bytes;
 	}
 	
 	public RawData() {

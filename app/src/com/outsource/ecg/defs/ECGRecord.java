@@ -1,13 +1,13 @@
-package com.outsource.ekg.defs;
+package com.outsource.ecg.defs;
 
 import java.util.Date;
 
-public abstract class EKGRecord {
-	private EKGRecord(String filename, EKGUser owner, Date date) {
+public abstract class ECGRecord {
+	private ECGRecord(String filename, ECGUser owner, Date date) {
 
 	}
 
-	public void setOwner(EKGUser owner) {
+	public void setOwner(ECGUser owner) {
 
 	}
 
@@ -15,7 +15,7 @@ public abstract class EKGRecord {
 		return -1;
 	}
 
-	public EKGUser getOwner() {
+	public ECGUser getOwner() {
 		return null;
 	}
 

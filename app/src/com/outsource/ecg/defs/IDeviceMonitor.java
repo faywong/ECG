@@ -1,4 +1,4 @@
-package com.outsource.ekg.defs;
+package com.outsource.ecg.defs;
 
 import java.util.Set;
 
@@ -7,9 +7,9 @@ public interface IDeviceMonitor {
 	public static final int DEVICE_TYPE_SERVER = 1;
 	public static final int DEVICE_TYPE_CLINET = 2;
 
-	public Set<IEKGSever> getAvailableServers();
+	public Set<IECGSever> getAvailableServers();
 
-	public Set<IEKGClient> getAvailableClients();
+	public Set<IECGClient> getAvailableClients();
 
 	public boolean registerDeviceInfoListener(int type,
 			IDeviceInfoListener listener);

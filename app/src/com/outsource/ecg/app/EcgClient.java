@@ -1,18 +1,19 @@
-package com.outsource.ekg.app;
+package com.outsource.ecg.app;
 
 import java.io.InputStreamReader;
-
-import com.outsource.ekg.R;
-import com.outsource.ekg.defs.IDataConnection;
-import com.outsource.ekg.defs.IEKGMsgParser;
-import com.outsource.ekg.defs.IEKGMsgSegment;
-import com.outsource.ekg.ui.WaveformView;
-import com.outsource.ekg.ui.WaveformView.Label;
-
+import com.outsource.ecg.defs.IDataConnection;
+import com.outsource.ecg.defs.IECGMsgParser;
+import com.outsource.ecg.defs.IECGMsgSegment;
+import com.outsource.ecg.ui.LineRenderer;
+import com.outsource.ecg.ui.WaveformView;
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 
-public class EkgClient extends Activity implements IEKGMsgParser {
+import com.outsource.ecg.R;
+
+public class EcgClient extends Activity implements IECGMsgParser {
 	private OnDataCaptureListener listener = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -20,11 +21,17 @@ public class EkgClient extends Activity implements IEKGMsgParser {
 		setContentView(R.layout.ekg);
 		WaveformView waveform = (WaveformView)findViewById(R.id.waveform);
 		setOnDataCaptureListener(waveform);
-		listener.onWaveFormDataCaptured(null, 1);
+		Paint testPaint = new Paint();
+		testPaint.setColor(Color.BLUE);
+		testPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		testPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
+		waveform.setRenderer(new LineRenderer(testPaint));
+		float[] testData = new float[] { 1.0f, 2.0f, 3.0f, 4.0f, 4.1f, 4.2f, 4.3f, 4.4f };
+		listener.onWaveFormDataCaptured(testData, 1);
 	}
 
 	@Override
-	public IEKGMsgSegment getSegment() {
+	public IECGMsgSegment getSegment() {
 		// TODO Auto-generated method stub
 		return null;
 	}

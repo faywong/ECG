@@ -1,5 +1,5 @@
-package com.outsource.ekg.defs;
-public interface IEKGMsgSegment {
+package com.outsource.ecg.defs;
+public interface IECGMsgSegment {
     public String getField(String name);
 	public String getType();
 }

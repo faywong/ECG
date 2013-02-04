@@ -1,6 +1,6 @@
-package com.outsource.ekg.defs;
+package com.outsource.ecg.defs;
 
-public abstract class EKGUser {
+public abstract class ECGUser {
 	public String getID() {
 		return null;
 	}

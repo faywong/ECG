@@ -1,5 +1,5 @@
-package com.outsource.ekg.defs;
-public interface IEKGSever {
+package com.outsource.ecg.defs;
+public interface IECGSever {
 	public String getMetaData(int key);
 	public void initialize();
 	public void start();

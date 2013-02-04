@@ -1,4 +1,4 @@
-package com.outsource.ekg.defs;
+package com.outsource.ecg.defs;
 
 public interface IDataConnection {
     public boolean connect();

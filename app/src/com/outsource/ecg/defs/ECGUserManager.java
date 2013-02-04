@@ -1,36 +1,36 @@
-package com.outsource.ekg.defs;
+package com.outsource.ecg.defs;
 
 import java.util.Set;
 
-public class EKGUserManager {
+public class ECGUserManager {
 	private static final String TAG = "EKGUserManager";
-	private static EKGUserManager sInstance = null;
+	private static ECGUserManager sInstance = null;
 	private DBHelper mDBHelper = null;
 
-	public static EKGUserManager Instance() {
+	public static ECGUserManager Instance() {
 		if (null == sInstance) {
-			sInstance = new EKGUserManager();
+			sInstance = new ECGUserManager();
 		}
 		return sInstance;
 	}
 
-	private EKGUserManager() {
+	private ECGUserManager() {
 
 	}
 
-	public boolean addUser(EKGUser user) {
+	public boolean addUser(ECGUser user) {
 		return true;
 	}
 
-	public boolean delUser(EKGUser user) {
+	public boolean delUser(ECGUser user) {
 		return true;
 	}
 
-	public Set<EKGUser> getAvailableUsers() {
+	public Set<ECGUser> getAvailableUsers() {
 		return null;
 	}
 
-	public EKGRecord getHistroyRecords() {
+	public ECGRecord getHistroyRecords() {
 		return null;
 	}
 
@@ -56,7 +56,7 @@ public class EKGUserManager {
 		}
 
 		@Override
-		public EKGUser queryUserByID() {
+		public ECGUser queryUserByID() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -68,6 +68,6 @@ public class EKGUserManager {
 
 		public boolean populateFromDB(String db);
 
-		public EKGUser queryUserByID();
+		public ECGUser queryUserByID();
 	}
 }
