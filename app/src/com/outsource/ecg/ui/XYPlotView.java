@@ -87,36 +87,38 @@ public class XYPlotView extends BaseChartView {
 
         DateAxis domainAxis = new DateAxis("Date");
         domainAxis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);
-        ValueAxis rangeAxis = new NumberAxis("Value 1");
+        ValueAxis rangeAxis = new NumberAxis("HBR");
 
         // create plot...
         IntervalXYDataset data1 = createDataset1();
-        XYItemRenderer renderer1 = new XYBarRenderer(0.20);
+        //XYItemRenderer renderer1 = new XYBarRenderer(0.20);
+        XYItemRenderer renderer1 = new StandardXYItemRenderer();
 
         XYPlot plot = new XYPlot(data1, domainAxis, rangeAxis, renderer1);
 
-        ValueAxis rangeAxis2 = new NumberAxis("Value 2");
+        ValueAxis rangeAxis2 = new NumberAxis("HBR");
         plot.setRangeAxis(1, rangeAxis2);
 
         // create subplot 2...
-        XYDataset data2A = createDataset2A();
-        plot.setDataset(1, data2A);
-        XYItemRenderer renderer2A = new StandardXYItemRenderer();
-        plot.setRenderer(1, renderer2A);
-        renderer2A.setSeriesStroke(0, 2.0f);
+        //XYDataset data2A = createDataset2A();
+        //plot.setDataset(1, data2A);
+        //XYItemRenderer renderer2A = new StandardXYItemRenderer();
+        //plot.setRenderer(1, renderer2A);
+        //renderer2A.setSeriesStroke(0, 2.0f);
 
+        /*
         XYDataset data2B = createDataset2B();
         plot.setDataset(2, data2B);
         plot.setRenderer(2, new StandardXYItemRenderer());
         plot.getRenderer(2).setSeriesStroke(0, 2.0f);
 
         plot.mapDatasetToRangeAxis(2, 1);
-
+        */
         plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
         plot.setOrientation(PlotOrientation.VERTICAL);
 
         AFreeChart chart = new AFreeChart(
-                "Overlaid XYPlot Demo 02",
+                "XYPlot Demo 02",
                 AFreeChart.DEFAULT_TITLE_FONT,
                 plot,
                 true);
