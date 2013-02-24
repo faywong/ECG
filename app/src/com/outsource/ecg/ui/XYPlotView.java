@@ -42,141 +42,103 @@
 package com.outsource.ecg.ui;
 
 import org.afree.chart.AFreeChart;
-import org.afree.chart.axis.DateAxis;
-import org.afree.chart.axis.DateTickMarkPosition;
 import org.afree.chart.axis.NumberAxis;
 import org.afree.chart.axis.ValueAxis;
 import org.afree.chart.plot.DatasetRenderingOrder;
 import org.afree.chart.plot.PlotOrientation;
 import org.afree.chart.plot.XYPlot;
 import org.afree.chart.renderer.xy.StandardXYItemRenderer;
-import org.afree.chart.renderer.xy.XYBarRenderer;
 import org.afree.chart.renderer.xy.XYItemRenderer;
-import org.afree.data.time.Day;
-import org.afree.data.time.TimePeriodAnchor;
-import org.afree.data.time.TimeSeries;
-import org.afree.data.time.TimeSeriesCollection;
 import org.afree.data.xy.IntervalXYDataset;
-import org.afree.data.xy.XYDataset;
-import org.afree.date.MonthConstants;
-
+import org.afree.data.xy.XYSeries;
+import org.afree.data.xy.XYSeriesCollection;
 import android.content.Context;
+import android.util.AttributeSet;
 
 /**
  * XYPlotView
+ * Note: After create, a default dataset with an empty XYSeries item is created
  */
 public class XYPlotView extends BaseChartView {
+	private static final String DEFAULT_USER_NAME = "ECG Chart";
+	public static final int DEFAULT_SERIES_INDEX = 0;
+	private XYSeriesCollection mSeries;
 
-    /**
-     * constructor
-     * @param context
-     */
-    public XYPlotView(Context context) {
-        super(context);
+	/**
+	 * constructor
+	 * 
+	 * @param context
+	 */
+	public XYPlotView(Context context) {
+		super(context);
+		final AFreeChart chart = createChart(getDataset());
+		setChart(chart);
+	}
 
-        final AFreeChart chart = createChart();
+	public XYPlotView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		final AFreeChart chart = createChart(getDataset());
+		setChart(chart);
+	}
 
-        setChart(chart);
-    }
+	/**
+	 * Creates an overlaid chart.
+	 * 
+	 * @return The chart.
+	 */
+	private static AFreeChart createChart(IntervalXYDataset dataset) {
+		NumberAxis domainAxis = new NumberAxis("Time");
+		domainAxis.setAutoRangeIncludesZero(true);
+		// domainAxis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);
+		ValueAxis rangeAxis = new NumberAxis("HBR");
 
-    /**
-     * Creates an overlaid chart.
-     * @return The chart.
-     */
-    private static AFreeChart createChart() {
+		// create plot...
+		// IntervalXYDataset data1 = getDataset();
+		// XYItemRenderer renderer1 = new XYBarRenderer(0.20);
+		XYItemRenderer renderer1 = new StandardXYItemRenderer();
 
-        DateAxis domainAxis = new DateAxis("Date");
-        domainAxis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);
-        ValueAxis rangeAxis = new NumberAxis("HBR");
+		XYPlot plot = new XYPlot(dataset, domainAxis, rangeAxis, renderer1);
 
-        // create plot...
-        IntervalXYDataset data1 = createDataset1();
-        //XYItemRenderer renderer1 = new XYBarRenderer(0.20);
-        XYItemRenderer renderer1 = new StandardXYItemRenderer();
+		// create subplot 2...
+		// XYDataset data2A = createDataset2A();
+		// plot.setDataset(1, data2A);
+		// XYItemRenderer renderer2A = new StandardXYItemRenderer();
+		// plot.setRenderer(1, renderer2A);
+		// renderer2A.setSeriesStroke(0, 2.0f);
 
-        XYPlot plot = new XYPlot(data1, domainAxis, rangeAxis, renderer1);
+		/*
+		 * XYDataset data2B = createDataset2B(); plot.setDataset(2, data2B);
+		 * plot.setRenderer(2, new StandardXYItemRenderer());
+		 * plot.getRenderer(2).setSeriesStroke(0, 2.0f);
+		 * 
+		 * plot.mapDatasetToRangeAxis(2, 1);
+		 */
+		plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+		plot.setOrientation(PlotOrientation.VERTICAL);
 
-        ValueAxis rangeAxis2 = new NumberAxis("HBR");
-        plot.setRangeAxis(1, rangeAxis2);
+		AFreeChart chart = new AFreeChart("Real-time ECG chart",
+				AFreeChart.DEFAULT_TITLE_FONT, plot, true);
 
-        // create subplot 2...
-        //XYDataset data2A = createDataset2A();
-        //plot.setDataset(1, data2A);
-        //XYItemRenderer renderer2A = new StandardXYItemRenderer();
-        //plot.setRenderer(1, renderer2A);
-        //renderer2A.setSeriesStroke(0, 2.0f);
+		return chart;
+	}
 
-        /*
-        XYDataset data2B = createDataset2B();
-        plot.setDataset(2, data2B);
-        plot.setRenderer(2, new StandardXYItemRenderer());
-        plot.getRenderer(2).setSeriesStroke(0, 2.0f);
+	/**
+	 * Creates a sample dataset.
+	 * 
+	 * @return The dataset.
+	 */
+	public XYSeriesCollection getDataset() {
+		if (null == mSeries) {
+			XYSeries series1 = new XYSeries(DEFAULT_USER_NAME);
 
-        plot.mapDatasetToRangeAxis(2, 1);
-        */
-        plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
-        plot.setOrientation(PlotOrientation.VERTICAL);
+			
+			for (int i = 1; i <= 10; i++) {
+				series1.add(i * 1.0, Math.random() * 7000 + 11000);
+			}
+			
 
-        AFreeChart chart = new AFreeChart(
-                "XYPlot Demo 02",
-                AFreeChart.DEFAULT_TITLE_FONT,
-                plot,
-                true);
-        
-        return chart;
-    }
-
-    /**
-     * Creates a sample dataset.
-     * @return The dataset.
-     */
-    private static IntervalXYDataset createDataset1() {
-
-        TimeSeries series1 = new TimeSeries("Series 1");
-
-        for(int i = 1; i <= 10; i++) {
-        	series1.add(new Day(i, MonthConstants.OCTOBER, 2011),
-        			Math.random() * 7000 + 11000);
-        }
-
-        TimeSeriesCollection result = new TimeSeriesCollection(series1);
-        return result;
-    }
-
-    /**
-     * Creates a sample dataset.
-     * @return The dataset.
-     */
-    private static XYDataset createDataset2A() {
-
-        TimeSeries series2 = new TimeSeries("Series 2-A");
-
-        for(int i = 1; i <= 20; i++) {
-        	series2.add(new Day(i, MonthConstants.OCTOBER, 2011),
-        			Math.random() * 8000 + 12000);
-        }
-
-        TimeSeriesCollection result = new TimeSeriesCollection(series2);
-        result.setXPosition(TimePeriodAnchor.MIDDLE);
-        return result;
-    }
-
-    /**
-     * Creates a sample dataset.
-     * @return The dataset.
-     */
-    private static XYDataset createDataset2B() {
-
-        TimeSeries series2 = new TimeSeries("Series 2-B");
-
-        for(int i = 1; i <= 20; i++) {
-        	series2.add(new Day(i, MonthConstants.OCTOBER, 2011),
-        			Math.random() * 70 + 25);
-        }
-
-        TimeSeriesCollection result = new TimeSeriesCollection(series2);
-        result.setXPosition(TimePeriodAnchor.MIDDLE);
-        return result;
-    }
-
+			mSeries = new XYSeriesCollection(series1);
+		}
+		return mSeries;
+	}
 }
