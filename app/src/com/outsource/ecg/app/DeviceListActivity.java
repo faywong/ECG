@@ -167,6 +167,8 @@ public class DeviceListActivity extends Activity {
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+            
+            Log.d(TAG, "the address of device to be connected: " + address);
 
             // Set result and finish this Activity
             setResult(Activity.RESULT_OK, intent);
