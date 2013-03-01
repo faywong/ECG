@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import org.afree.data.xy.XYSeries;
 import org.afree.data.xy.XYSeriesCollection;
 
+import com.outsource.ecg.ui.JDBCXYChartView;
 import com.outsource.ecg.ui.XYPlotView;
 import com.outsource.ecg.defs.IDataConnection;
 import com.outsource.ecg.defs.IECGMsgParser;
@@ -14,6 +15,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -27,7 +29,7 @@ import com.outsource.ecg.R;
 public class EcgClient extends Activity implements IECGMsgParser {
 	private static final String TAG = "EcgClient";
 	private static final boolean DEBUG = true;
-	private static String DB_FILE_NAME = "main.sqlite";
+	private static String DB_FILE_NAME = "test.sqlite";
 	private String dbFilePath;
 	private Object listener;
 	private XYSeries mDefaultSeries;
@@ -109,25 +111,22 @@ public class EcgClient extends Activity implements IECGMsgParser {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dbFilePath = this.getApplicationInfo().dataDir + "/" + DB_FILE_NAME;
-		Log.d(TAG, "application data dir:" + this.getApplicationInfo().dataDir);
+		dbFilePath = Environment.getExternalStorageDirectory() + "/" + DB_FILE_NAME;
 		// JDBCXYChartView contentView = new JDBCXYChartView(this, dbFilePath);
-		// XYPlotView contentView = new XYPlotView(this);
-		setContentView(R.layout.ecg_client_main);
+		setContentView(R.layout.ecg_client_db);
+		JDBCXYChartView plotView = (JDBCXYChartView) findViewById(R.id.ecg_chart);
+		Log.d(TAG, "the location of DB file:" + dbFilePath);
+		plotView.setDBPath(dbFilePath);
+		
+/*		setContentView(R.layout.ecg_client_main);
 		XYPlotView plotView = (XYPlotView) findViewById(R.id.ecg_chart);
 		XYSeriesCollection series = plotView.getDataset();
 		mDefaultSeries = (XYSeries) series.getSeries().get(
 				XYPlotView.DEFAULT_SERIES_INDEX);
-		/*
-		 * Button testButton1 = (Button)findViewById(R.id.test1);
-		 * testButton1.setOnClickListener(new OnClickListener() {
-		 * 
-		 * @Override public void onClick(View v) { // TODO Auto-generated method
-		 * stub Log.d(TAG, "onClick() called!"); for (int i = 1; i <= 10; i++) {
-		 * XYSeries it = EcgClient.this.mDefaultSeries; if (null != it) {
-		 * it.add(i * 1.0, Math.random() * 7000 + 11000); Log.d(TAG,
-		 * "add data to series for the " + i + "th time!"); } } } });
-		 */
+		
+		for (int i = 1; i <= 100; i++) {
+			mDefaultSeries.add(i * 1.0, Math.random() * 7000 + 11000);
+		}*/
 
 		// Get local Bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -152,11 +151,16 @@ public class EcgClient extends Activity implements IECGMsgParser {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		if (null != mEcgService) {
+			mEcgService.start();
+		}
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
+        if(DEBUG) Log.d(TAG, "onActivityResult " + resultCode);
+
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
 		case REQUEST_ENABLE_BT:
@@ -218,12 +222,16 @@ public class EcgClient extends Activity implements IECGMsgParser {
 
 	private void connectDevice(Intent data, boolean secure) {
 		// Get the device MAC address
-		String address = data.getExtras().getString(
-				DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-		// Get the BluetoothDevice object
-		BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-		// Attempt to connect to the device
-		mEcgService.connect(device, secure);
+		if (null != data && null != data.getExtras()) {
+			String address  = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+			// Get the BluetoothDevice object
+			BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+			// Attempt to connect to the device
+			mEcgService.connect(device, secure);
+		} else {
+			Log.e(TAG, "FATAL ERROR! The selected device for connect has no address!");
+		}
+
 	}
 
 	@Override

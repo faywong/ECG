@@ -47,10 +47,13 @@ import java.sql.SQLException;
 
 import org.afree.chart.ChartFactory;
 import org.afree.chart.AFreeChart;
+import org.afree.chart.plot.PlotOrientation;
 import org.afree.data.jdbc.JDBCXYDataset;
 import org.afree.data.xy.XYDataset;
 
 import android.content.Context;
+import android.util.AttributeSet;
+import android.util.Log;
 
 /**
  * JDBCXYChartDemoView
@@ -61,6 +64,16 @@ import android.content.Context;
  * http://code.google.com/p/sqldroid/
  */
 public class JDBCXYChartView extends BaseChartView {
+
+	private static final String TAG = "JDBCXYChartView";
+	/**
+	 * constructor
+	 * 
+	 * @param context
+	 */
+	public JDBCXYChartView(Context context, AttributeSet attr) {
+		super(context, attr);
+	}
 
 	/**
 	 * constructor
@@ -76,6 +89,17 @@ public class JDBCXYChartView extends BaseChartView {
 	}
 
 	/**
+	 * set the local file system path of DB file
+	 * @param dbFilePath
+	 */
+	public void setDBPath(String dbFilePath) {
+		final AFreeChart chart = createChart(dbFilePath);
+		Log.d(TAG, "Ready to create chart, dbFilePath: " + dbFilePath);
+		setChart(chart);
+		invalidate();
+	}
+
+	/**
 	 * Initialize table.
 	 * 
 	 * @param con
@@ -84,12 +108,13 @@ public class JDBCXYChartView extends BaseChartView {
 		boolean create = con
 				.createStatement()
 				.execute(
-						"CREATE TABLE XYData1 (X REAL, SERIESE1 REAL, SERIESE2 REAL, SERIESE3 REAL, SERIESE4 REAL)");
-
+						"CREATE TABLE if not exists XYData1 (X REAL, SERIESE1 REAL, SERIESE2 REAL, SERIESE3 REAL, SERIESE4 REAL)");
+		Log.d(TAG, "create table result:" + create);
 		if (create) {
-			con.createStatement()
+			boolean res = con.createStatement()
 					.execute(
 							"INSERT INTO XYData1 (X, SERIESE1, SERIESE2, SERIESE3, SERIESE4 ) VALUES (10, 32.1, 53.4, 32.1, 53.4)");
+			Log.d(TAG, "insert data result:" + res);
 			con.createStatement()
 					.execute(
 							"INSERT INTO XYData1 (X, SERIESE1, SERIESE2, SERIESE3, SERIESE4 ) VALUES (20, 54.3, 75.2, 54.3, 75.2)");
@@ -130,7 +155,8 @@ public class JDBCXYChartView extends BaseChartView {
 		Connection con;
 
 		try {
-			Class.forName("com.lemadi.storage.database.sqldroid.SqldroidDriver");
+			//Class.forName("com.lemadi.storage.database.sqldroid.SqldroidDriver");
+			Class.forName("org.sqldroid.SQLDroidDriver");
 		} catch (ClassNotFoundException e) {
 			System.err.print("ClassNotFoundException: ");
 			System.err.println(e.getMessage());
@@ -174,12 +200,13 @@ public class JDBCXYChartView extends BaseChartView {
 		XYDataset data = createDataset(dbFilePath);
 
 		// create the chart...
-		AFreeChart chart = ChartFactory.createTimeSeriesChart(
-				"ECG Chart", // chart title
+/*		AFreeChart chart = ChartFactory.createTimeSeriesChart("ECG Chart", // chart
+																			// title
 				"Time", "Value", data, // data
 				true, // include legend
-				true, false);
-
+				true, false);*/
+		
+		AFreeChart chart = ChartFactory.createXYLineChart("ECG Chart", "Time", "HBR", data, PlotOrientation.VERTICAL, true, true, false);
 		return chart;
 
 	}

@@ -68,14 +68,6 @@
         </Button>
 
         <Button
-            android:id="@+id/pause_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/pause_btn_label" >
-        </Button>
-
-        <Button
             android:id="@+id/stop_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -84,11 +76,11 @@
         </Button>
 
         <Button
-            android:id="@+id/detail_btn"
+            android:id="@+id/save_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/detail_btn_label" >
+            android:text="@string/save_btn_label" >
         </Button>
     </LinearLayout>
 

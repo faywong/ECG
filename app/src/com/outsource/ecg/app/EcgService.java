@@ -39,8 +39,8 @@ import android.util.Log;
  */
 public class EcgService {
     // Debugging
-    private static final String TAG = "EcgClientService";
-    private static final boolean D = true;
+    private static final String TAG = "EcgCentraService";
+    private static final boolean DEBUG = true;
 
     // Name for the SDP record when creating server socket
     private static final String NAME_SECURE = "EcgClientSecure";
@@ -83,7 +83,7 @@ public class EcgService {
      * @param state  An integer defining the current connection state
      */
     private synchronized void setState(int state) {
-        if (D) Log.d(TAG, "setState() " + mState + " -> " + state);
+        if (DEBUG) Log.d(TAG, "setState() " + mState + " -> " + state);
         mState = state;
 
         // Give the new state to the Handler so the UI Activity can update
@@ -100,7 +100,7 @@ public class EcgService {
      * Start the chat service. Specifically start AcceptThread to begin a
      * session in listening (server) mode. Called by the Activity onResume() */
     public synchronized void start() {
-        if (D) Log.d(TAG, "start");
+        if (DEBUG) Log.d(TAG, "start");
 
         // Cancel any thread attempting to make a connection
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
@@ -127,7 +127,7 @@ public class EcgService {
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
     public synchronized void connect(BluetoothDevice device, boolean secure) {
-        if (D) Log.d(TAG, "connect to: " + device);
+        if (DEBUG) Log.d(TAG, "connect to: " + device);
 
         // Cancel any thread attempting to make a connection
         if (mState == STATE_CONNECTING) {
@@ -150,7 +150,7 @@ public class EcgService {
      */
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice
             device, final String socketType) {
-        if (D) Log.d(TAG, "connected, Socket Type:" + socketType);
+        if (DEBUG) Log.d(TAG, "connected, Socket Type:" + socketType);
 
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
@@ -186,7 +186,7 @@ public class EcgService {
      * Stop all threads
      */
     public synchronized void stop() {
-        if (D) Log.d(TAG, "stop");
+        if (DEBUG) Log.d(TAG, "stop");
 
         if (mConnectThread != null) {
             mConnectThread.cancel();
@@ -287,7 +287,7 @@ public class EcgService {
         }
 
         public void run() {
-            if (D) Log.d(TAG, "Socket Type: " + mSocketType +
+            if (DEBUG) Log.d(TAG, "Socket Type: " + mSocketType +
                     "BEGIN mAcceptThread" + this);
             setName("AcceptThread" + mSocketType);
 
@@ -327,12 +327,12 @@ public class EcgService {
                     }
                 }
             }
-            if (D) Log.i(TAG, "END mAcceptThread, socket Type: " + mSocketType);
+            if (DEBUG) Log.i(TAG, "END mAcceptThread, socket Type: " + mSocketType);
 
         }
 
         public void cancel() {
-            if (D) Log.d(TAG, "Socket Type" + mSocketType + "cancel " + this);
+            if (DEBUG) Log.d(TAG, "Socket Type" + mSocketType + "cancel " + this);
             try {
                 mmServerSocket.close();
             } catch (IOException e) {
@@ -401,7 +401,8 @@ public class EcgService {
             synchronized (EcgService.this) {
                 mConnectThread = null;
             }
-
+            Log.d(TAG, "Got a connection");
+            
             // Start the connected thread
             connected(mmSocket, mmDevice, mSocketType);
         }

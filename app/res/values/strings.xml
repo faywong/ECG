@@ -21,9 +21,8 @@
 
     <!-- ECG control buttons -->
     <string name="start_btn_label">Start</string>
-    <string name="pause_btn_label">Pause</string>
     <string name="stop_btn_label">Stop</string>
-    <string name="detail_btn_label">Detail</string>
+    <string name="save_btn_label">Save</string>
 
     <!-- Strings for Test -->
     <string name="test_connection_status">Status:Connected</string>

@@ -131,12 +131,6 @@ public class XYPlotView extends BaseChartView {
 		if (null == mSeries) {
 			XYSeries series1 = new XYSeries(DEFAULT_USER_NAME);
 
-			
-			for (int i = 1; i <= 10; i++) {
-				series1.add(i * 1.0, Math.random() * 7000 + 11000);
-			}
-			
-
 			mSeries = new XYSeriesCollection(series1);
 		}
 		return mSeries;
