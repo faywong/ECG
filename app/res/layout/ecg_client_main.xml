@@ -60,19 +60,11 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/start_btn"
+            android:id="@+id/start_stop_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/start_btn_label" >
-        </Button>
-
-        <Button
-            android:id="@+id/stop_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/stop_btn_label" >
+            android:text="@string/start_label" >
         </Button>
 
         <Button
@@ -80,7 +72,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/save_btn_label" >
+            android:text="@string/save_label" >
         </Button>
     </LinearLayout>
 

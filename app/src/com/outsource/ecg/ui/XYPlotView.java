@@ -82,7 +82,7 @@ public class XYPlotView extends BaseChartView {
 	}
 
 	/**
-	 * Creates an overlaid chart.
+	 * Creates an XY chart.
 	 * 
 	 * @return The chart.
 	 */
@@ -123,7 +123,7 @@ public class XYPlotView extends BaseChartView {
 	}
 
 	/**
-	 * Creates a sample dataset.
+	 * Create a SeriesCollection if not exist, user also can retrieve it to change the Series object in it
 	 * 
 	 * @return The dataset.
 	 */

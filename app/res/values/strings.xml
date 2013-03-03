@@ -20,9 +20,12 @@
     <string name="button_scan">Scan for devices</string>
 
     <!-- ECG control buttons -->
-    <string name="start_btn_label">Start</string>
-    <string name="stop_btn_label">Stop</string>
-    <string name="save_btn_label">Save</string>
+    <string name="start_label">Start</string>
+    <string name="stop_label">Stop</string>
+    <string name="save_label">Save</string>
+    
+    <!-- ECG user prompts -->
+    <string name="external_storage_unmounted_prompt">Please ensure external storage(such as SDCard) is mounted! :)</string>
 
     <!-- Strings for Test -->
     <string name="test_connection_status">Status:Connected</string>

@@ -7,13 +7,18 @@ import org.afree.data.xy.XYSeriesCollection;
 
 import com.outsource.ecg.ui.JDBCXYChartView;
 import com.outsource.ecg.ui.XYPlotView;
+import com.outsource.ecg.defs.ECGUser;
+import com.outsource.ecg.defs.ECGUserManager;
 import com.outsource.ecg.defs.IDataConnection;
 import com.outsource.ecg.defs.IECGMsgParser;
 import com.outsource.ecg.defs.IECGMsgSegment;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -22,6 +27,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.outsource.ecg.R;
@@ -29,7 +35,7 @@ import com.outsource.ecg.R;
 public class EcgClient extends Activity implements IECGMsgParser {
 	private static final String TAG = "EcgClient";
 	private static final boolean DEBUG = true;
-	private static String DB_FILE_NAME = "test.sqlite";
+	private static String DB_FILE_NAME = "ecg.sqlite";
 	private String dbFilePath;
 	private Object listener;
 	private XYSeries mDefaultSeries;
@@ -108,25 +114,59 @@ public class EcgClient extends Activity implements IECGMsgParser {
 	// Member object for the ECG services
 	private EcgService mEcgService = null;
 
+	// External storage state listener
+	private final BroadcastReceiver mSdcardListener = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			String action = intent.getAction();
+			Log.d("TAG", "sdcard action:::::" + action);
+			if (Intent.ACTION_MEDIA_MOUNTED.equals(action)
+					|| Intent.ACTION_MEDIA_SCANNER_STARTED.equals(action)
+					|| Intent.ACTION_MEDIA_SCANNER_FINISHED.equals(action)) {
+				// mounted
+				try {
+					ECGUserManager.Instance().loadUserInfo(true);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					Toast.makeText(context,
+							"ECGUserManager.Instance() failed!",
+							Toast.LENGTH_LONG).show();
+					finish();
+				}
+			} else if (Intent.ACTION_MEDIA_REMOVED.equals(action)
+					|| Intent.ACTION_MEDIA_UNMOUNTED.equals(action)
+					|| Intent.ACTION_MEDIA_BAD_REMOVAL.equals(action)) {
+				// fail to mounted, do nothing
+				Toast.makeText(context, "External storage mount failed!",
+						Toast.LENGTH_LONG).show();
+			}
+
+		}
+	};
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dbFilePath = Environment.getExternalStorageDirectory() + "/" + DB_FILE_NAME;
+		dbFilePath = Environment.getExternalStorageDirectory() + "/ecg/"
+				+ DB_FILE_NAME;
 		// JDBCXYChartView contentView = new JDBCXYChartView(this, dbFilePath);
 		setContentView(R.layout.ecg_client_db);
 		JDBCXYChartView plotView = (JDBCXYChartView) findViewById(R.id.ecg_chart);
 		Log.d(TAG, "the location of DB file:" + dbFilePath);
 		plotView.setDBPath(dbFilePath);
-		
-/*		setContentView(R.layout.ecg_client_main);
-		XYPlotView plotView = (XYPlotView) findViewById(R.id.ecg_chart);
-		XYSeriesCollection series = plotView.getDataset();
-		mDefaultSeries = (XYSeries) series.getSeries().get(
-				XYPlotView.DEFAULT_SERIES_INDEX);
-		
-		for (int i = 1; i <= 100; i++) {
-			mDefaultSeries.add(i * 1.0, Math.random() * 7000 + 11000);
-		}*/
+
+		/*
+		 * setContentView(R.layout.ecg_client_main); XYPlotView plotView =
+		 * (XYPlotView) findViewById(R.id.ecg_chart); XYSeriesCollection series
+		 * = plotView.getDataset(); mDefaultSeries = (XYSeries)
+		 * series.getSeries().get( XYPlotView.DEFAULT_SERIES_INDEX);
+		 * 
+		 * for (int i = 1; i <= 100; i++) { mDefaultSeries.add(i * 1.0,
+		 * Math.random() * 7000 + 11000); }
+		 */
 
 		// Get local Bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -138,6 +178,17 @@ public class EcgClient extends Activity implements IECGMsgParser {
 			finish();
 			return;
 		}
+
+		// register external storage state listener
+		IntentFilter intentFilter = new IntentFilter(
+				Intent.ACTION_MEDIA_MOUNTED);
+		intentFilter.addAction(Intent.ACTION_MEDIA_SCANNER_STARTED);
+		intentFilter.addAction(Intent.ACTION_MEDIA_SCANNER_FINISHED);
+		intentFilter.addAction(Intent.ACTION_MEDIA_REMOVED);
+		intentFilter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
+		intentFilter.addAction(Intent.ACTION_MEDIA_BAD_REMOVAL);
+		intentFilter.addDataScheme("file");
+		registerReceiver(mSdcardListener, intentFilter);
 	}
 
 	@Override
@@ -145,6 +196,7 @@ public class EcgClient extends Activity implements IECGMsgParser {
 		// TODO Auto-generated method stub
 		super.onStart();
 		enableBluetoothFunction();
+		checkExternalStorageMounted();
 	}
 
 	@Override
@@ -154,12 +206,44 @@ public class EcgClient extends Activity implements IECGMsgParser {
 		if (null != mEcgService) {
 			mEcgService.start();
 		}
+		TextView nameText = (TextView) findViewById(R.id.patient_name);
+		TextView IDText = (TextView) findViewById(R.id.patient_id);
+		TextView HBRText = (TextView) findViewById(R.id.patient_hbr);
+		try {
+			ECGUser currentUser = ECGUserManager.Instance().getCurrentUser();
+			if (null != nameText) {
+				nameText.setText(currentUser.getName());
+			}
+			if (null != IDText) {
+				IDText.setText(String.valueOf(currentUser.getID()));
+			}
+			if (null != HBRText) {
+				IDText.setText(String.valueOf(currentUser.getHBR()));
+			}
+			if (!currentUser.isValid()) {
+				Toast.makeText(
+						this,
+						"Current user is invalid, Please press to set user information!",
+						Toast.LENGTH_LONG).show();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		unregisterReceiver(mSdcardListener);
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
-        if(DEBUG) Log.d(TAG, "onActivityResult " + resultCode);
+		if (DEBUG)
+			Log.d(TAG, "onActivityResult " + resultCode);
 
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
@@ -220,16 +304,43 @@ public class EcgClient extends Activity implements IECGMsgParser {
 
 	}
 
+	private void checkExternalStorageMounted() {
+		Log.d(TAG,
+				"Result: "
+						+ (Environment.MEDIA_MOUNTED != Environment
+								.getExternalStorageState()));
+		if (!Environment.getExternalStorageState().equals(
+				Environment.MEDIA_MOUNTED)) {
+			Toast.makeText(this,
+					getString(R.string.external_storage_unmounted_prompt),
+					Toast.LENGTH_LONG).show();
+			finish();
+		} else {
+			// populate user infomation from database
+			try {
+				ECGUserManager.Instance().loadUserInfo(true);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Toast.makeText(this, "ECGUserManager.Instance() failed!",
+						Toast.LENGTH_LONG).show();
+				finish();
+			}
+		}
+	}
+
 	private void connectDevice(Intent data, boolean secure) {
 		// Get the device MAC address
 		if (null != data && null != data.getExtras()) {
-			String address  = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+			String address = data.getExtras().getString(
+					DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 			// Get the BluetoothDevice object
 			BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 			// Attempt to connect to the device
 			mEcgService.connect(device, secure);
 		} else {
-			Log.e(TAG, "FATAL ERROR! The selected device for connect has no address!");
+			Log.e(TAG,
+					"FATAL ERROR! The selected device for connect has no address!");
 		}
 
 	}

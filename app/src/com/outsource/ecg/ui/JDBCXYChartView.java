@@ -152,7 +152,7 @@ public class JDBCXYChartView extends BaseChartView {
 		JDBCXYDataset data = null;
 
 		String url = "jdbc:sqldroid:" + dbFilePath;
-		Connection con;
+		Connection sqlConnection;
 
 		try {
 			//Class.forName("com.lemadi.storage.database.sqldroid.SqldroidDriver");
@@ -163,15 +163,15 @@ public class JDBCXYChartView extends BaseChartView {
 		}
 
 		try {
-			con = DriverManager.getConnection(url);
+			sqlConnection = DriverManager.getConnection(url);
 
 			// init data
-			init(con);
+			init(sqlConnection);
 
-			data = new JDBCXYDataset(con);
+			data = new JDBCXYDataset(sqlConnection);
 			String sql = "SELECT * FROM XYDATA1;";
 			data.executeQuery(sql);
-			con.close();
+			sqlConnection.close();
 		}
 
 		catch (SQLException e) {

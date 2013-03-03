@@ -27,20 +27,19 @@ public final class R {
     public static final class id {
         public static final int button_scan=0x7f070004;
         public static final int connection_status=0x7f070006;
-        public static final int discoverable=0x7f070011;
+        public static final int discoverable=0x7f070010;
         public static final int ecg_chart=0x7f07000a;
         public static final int ecg_control_layout=0x7f07000b;
         public static final int ecg_info_layout=0x7f070005;
-        public static final int insecure_connect_scan=0x7f070010;
+        public static final int insecure_connect_scan=0x7f07000f;
         public static final int new_devices=0x7f070003;
         public static final int paired_devices=0x7f070001;
         public static final int patient_hbr=0x7f070009;
         public static final int patient_id=0x7f070008;
         public static final int patient_name=0x7f070007;
-        public static final int save_btn=0x7f07000e;
-        public static final int secure_connect_scan=0x7f07000f;
-        public static final int start_btn=0x7f07000c;
-        public static final int stop_btn=0x7f07000d;
+        public static final int save_btn=0x7f07000d;
+        public static final int secure_connect_scan=0x7f07000e;
+        public static final int start_stop_btn=0x7f07000c;
         public static final int title_new_devices=0x7f070002;
         public static final int title_paired_devices=0x7f070000;
     }
@@ -59,10 +58,13 @@ public final class R {
         public static final int bt_not_enabled_leaving=0x7f050002;
         public static final int button_scan=0x7f05000c;
         public static final int discoverable=0x7f050005;
+        /**  ECG user prompts 
+         */
+        public static final int external_storage_unmounted_prompt=0x7f050010;
         public static final int insecure_connect=0x7f050004;
         public static final int none_found=0x7f050009;
         public static final int none_paired=0x7f050008;
-        public static final int save_btn_label=0x7f05000f;
+        public static final int save_label=0x7f05000f;
         /**  DeviceListActivity 
          */
         public static final int scanning=0x7f050006;
@@ -72,15 +74,15 @@ public final class R {
         public static final int select_device=0x7f050007;
         /**  ECG control buttons 
          */
-        public static final int start_btn_label=0x7f05000d;
-        public static final int stop_btn_label=0x7f05000e;
+        public static final int start_label=0x7f05000d;
+        public static final int stop_label=0x7f05000e;
         public static final int test1=0x7f050001;
         /**  Strings for Test 
          */
-        public static final int test_connection_status=0x7f050010;
-        public static final int test_hbr_value=0x7f050013;
-        public static final int test_user_id=0x7f050012;
-        public static final int test_user_name=0x7f050011;
+        public static final int test_connection_status=0x7f050011;
+        public static final int test_hbr_value=0x7f050014;
+        public static final int test_user_id=0x7f050013;
+        public static final int test_user_name=0x7f050012;
         public static final int title_other_devices=0x7f05000b;
         public static final int title_paired_devices=0x7f05000a;
     }
