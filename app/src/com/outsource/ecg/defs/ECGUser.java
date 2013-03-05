@@ -67,24 +67,24 @@ public class ECGUser {
 	}
 
 	public String getName() {
-		return null;
+		return mName;
 	}
 
 	public String getGender() {
-		return null;
+		return mGender;
 	}
 
 	public int getAge() {
-		return 0;
+		return mAge;
 	}
 
 	// get Heart beat rate
-	public int getHBR() {
-		return 0;
+	public double getHBR() {
+		return mHBR;
 	}
 
 	public boolean isValid() {
-		return (mID == INVALID_ID);
+		return (mID != INVALID_ID);
 	}
 	
 	// for extension

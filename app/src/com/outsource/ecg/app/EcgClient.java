@@ -203,6 +203,7 @@ public class EcgClient extends Activity implements IECGMsgParser {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		Log.d(TAG, "onResume() in");
 		if (null != mEcgService) {
 			mEcgService.start();
 		}
@@ -211,14 +212,18 @@ public class EcgClient extends Activity implements IECGMsgParser {
 		TextView HBRText = (TextView) findViewById(R.id.patient_hbr);
 		try {
 			ECGUser currentUser = ECGUserManager.Instance().getCurrentUser();
+			Log.d(TAG,
+					"currentUser:" + currentUser + " valid:"
+							+ currentUser.isValid() + " name:"
+							+ currentUser.getName());
 			if (null != nameText) {
-				nameText.setText(currentUser.getName());
+				nameText.setText("Name:" + currentUser.getName());
 			}
 			if (null != IDText) {
-				IDText.setText(String.valueOf(currentUser.getID()));
+				IDText.setText("ID:\n" + String.valueOf(currentUser.getID()));
 			}
 			if (null != HBRText) {
-				IDText.setText(String.valueOf(currentUser.getHBR()));
+				IDText.setText("HBR:\n" + String.valueOf(currentUser.getHBR()));
 			}
 			if (!currentUser.isValid()) {
 				Toast.makeText(
