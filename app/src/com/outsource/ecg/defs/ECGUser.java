@@ -66,6 +66,10 @@ public class ECGUser {
 		return mID;
 	}
 
+	public String getIDDesc() {
+		return "ID:" + mID;
+	}
+	
 	public String getName() {
 		return mName;
 	}
@@ -74,15 +78,31 @@ public class ECGUser {
 		return mGender;
 	}
 
+	public String getAgeDesc() {
+		return "Age:" + mAge;
+	}
+	
 	public int getAge() {
 		return mAge;
 	}
 
+	public String getHBRDesc() {
+		return "HBR:" + mHBR;
+	}
+	
 	// get Heart beat rate
 	public double getHBR() {
 		return mHBR;
 	}
 
+	public String getECGDataPath() {
+		return mDataPath;
+	}
+	
+	public String getECGDataPathDesc() {
+		return "ECGData:" + mDataPath;
+	}
+	
 	public boolean isValid() {
 		return (mID != INVALID_ID);
 	}

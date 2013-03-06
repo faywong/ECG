@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import android.os.Environment;
 import android.util.Log;
@@ -23,7 +24,7 @@ public class ECGUserManager {
 			+ "/user.sqlite";
 	private static final String JDBC_URL_PREFIX = "jdbc:sqldroid:";
 
-	private HashMap<String, ECGUser> mUsers = new HashMap<String, ECGUser>();
+	private ArrayList<ECGUser> mUsers = new ArrayList<ECGUser>();
 
 	private static final ECGUser INVALID_USER = new ECGUser("Invalid", "Invalid", 9999, 0.0);
 	private static ECGUser mCurrentUser = INVALID_USER;
@@ -119,7 +120,7 @@ public class ECGUserManager {
 		throw new MethodNotImplementedException();
 	}
 
-	public HashMap<String, ECGUser> getAvailableUsers() {
+	public ArrayList<ECGUser> getAvailableUsers() {
 		String url = getJdbcUrlPrefix() + UserManagementDBPath;
 		Connection sqlConnection;
 		try {
@@ -149,7 +150,7 @@ public class ECGUserManager {
 						.getString(ECGUser.COL_DATA_PATH_NAME);
 				ECGUser user = new ECGUser(id, name, gender, age, HBR,
 						enrollDate, dataPath);
-				mUsers.put(name, user);
+				mUsers.add(user);
 				Log.d(TAG, "a new ECGUser got: " + user);
 			}
 			sqlConnection.close();

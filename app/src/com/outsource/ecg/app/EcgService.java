@@ -87,7 +87,7 @@ public class EcgService {
         mState = state;
 
         // Give the new state to the Handler so the UI Activity can update
-        mHandler.obtainMessage(EcgClient.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
+        mHandler.obtainMessage(EcgClientActivity.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
     }
 
     /**
@@ -173,9 +173,9 @@ public class EcgService {
         mConnectedThread.start();
 
         // Send the name of the connected device back to the UI Activity
-        Message msg = mHandler.obtainMessage(EcgClient.MESSAGE_DEVICE_NAME);
+        Message msg = mHandler.obtainMessage(EcgClientActivity.MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
-        bundle.putString(EcgClient.DEVICE_NAME, device.getName());
+        bundle.putString(EcgClientActivity.DEVICE_NAME, device.getName());
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
@@ -232,9 +232,9 @@ public class EcgService {
      */
     private void connectionFailed() {
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(EcgClient.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(EcgClientActivity.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(EcgClient.TOAST, "Unable to connect device");
+        bundle.putString(EcgClientActivity.TOAST, "Unable to connect device");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
@@ -247,9 +247,9 @@ public class EcgService {
      */
     private void connectionLost() {
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(EcgClient.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(EcgClientActivity.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(EcgClient.TOAST, "Device connection was lost");
+        bundle.putString(EcgClientActivity.TOAST, "Device connection was lost");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
@@ -455,7 +455,7 @@ public class EcgService {
                     bytes = mmInStream.read(buffer);
 
                     // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(EcgClient.MESSAGE_READ, bytes, -1, buffer)
+                    mHandler.obtainMessage(EcgClientActivity.MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
@@ -476,7 +476,7 @@ public class EcgService {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                mHandler.obtainMessage(EcgClient.MESSAGE_WRITE, -1, -1, buffer)
+                mHandler.obtainMessage(EcgClientActivity.MESSAGE_WRITE, -1, -1, buffer)
                         .sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);

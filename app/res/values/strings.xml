@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">EcgClient</string>
-    <string name="test1">test1</string>
+    <string name="hello_world">Hello world!</string>
     <string name="bt_not_enabled_leaving">Bluetooth is not enabled, exit!</string>
 
     <!-- Options Menu -->
