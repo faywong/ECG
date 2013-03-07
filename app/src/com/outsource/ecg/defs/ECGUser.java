@@ -78,6 +78,11 @@ public class ECGUser {
 		return mGender;
 	}
 
+	
+	public String getEnrollDataDesc() {
+		return "Enroll Date:" + mEnrollDate;
+	}
+
 	public String getAgeDesc() {
 		return "Age:" + mAge;
 	}

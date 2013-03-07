@@ -49,6 +49,7 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 				child.add(user.getGender());
 				child.add(user.getHBRDesc());
 				child.add(user.getECGDataPathDesc());
+				child.add(user.getEnrollDataDesc());
 				childItem.add(child);
 			}
 		} catch (Exception ex) {
