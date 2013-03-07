@@ -412,7 +412,7 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.option_menu, menu);
+		inflater.inflate(R.menu.main_option_menu, menu);
 		return true;
 	}
 

@@ -4,13 +4,18 @@ import java.util.ArrayList;
 
 import android.app.ExpandableListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.Toast;
 
+import com.outsource.ecg.R;
 import com.outsource.ecg.ui.ECGUserAdapter;
 import com.outsource.ecg.defs.ECGUserManager;
 import com.outsource.ecg.defs.ECGUser;
@@ -19,6 +24,7 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 		OnChildClickListener {
 	private static final String TAG = "ECGUserManageActivity";
 	public static final String ACTION_ECG_USER_MANAGE = "com.outsource.ecg.ECG_MANAGER_MANAGE";
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -28,9 +34,9 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 		expandbleLis.setClickable(true);
 
 		setGroupData();
-		setChildGroupData();
 
-		ECGUserAdapter mECGUserAdapter = new ECGUserAdapter(groupItem, childItem);
+		ECGUserAdapter mECGUserAdapter = new ECGUserAdapter(groupItem,
+				childItem);
 		mECGUserAdapter
 				.setInflater(
 						(LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),
@@ -41,8 +47,9 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 
 	public void setGroupData() {
 		try {
-			ArrayList<ECGUser> users = ECGUserManager.Instance().getAvailableUsers();
-			for (ECGUser user: users) {
+			ArrayList<ECGUser> users = ECGUserManager.Instance()
+					.getAvailableUsers();
+			for (ECGUser user : users) {
 				groupItem.add(user);
 				ArrayList<String> child = new ArrayList<String>();
 				child.add(user.getIDDesc());
@@ -54,52 +61,12 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			
+
 		}
 	}
 
 	ArrayList<ECGUser> groupItem = new ArrayList<ECGUser>();
 	ArrayList<Object> childItem = new ArrayList<Object>();
-
-	public void setChildGroupData() {/*
-		*//**
-		 * Add Data For TecthNology
-		 *//*
-		ArrayList<String> child = new ArrayList<String>();
-		child.add("Java");
-		child.add("Drupal");
-		child.add(".Net Framework");
-		child.add("PHP");
-		childItem.add(child);
-
-		*//**
-		 * Add Data For Mobile
-		 *//*
-		child = new ArrayList<String>();
-		child.add("Android");
-		child.add("Window Mobile");
-		child.add("iPHone");
-		child.add("Blackberry");
-		childItem.add(child);
-		*//**
-		 * Add Data For Manufacture
-		 *//*
-		child = new ArrayList<String>();
-		child.add("HTC");
-		child.add("Apple");
-		child.add("Samsung");
-		child.add("Nokia");
-		childItem.add(child);
-		*//**
-		 * Add Data For Extras
-		 *//*
-		child = new ArrayList<String>();
-		child.add("Contact Us");
-		child.add("About Us");
-		child.add("Location");
-		child.add("Root Cause");
-		childItem.add(child);
-	*/}
 
 	@Override
 	public boolean onChildClick(ExpandableListView parent, View v,
@@ -107,5 +74,25 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 		Toast.makeText(ECGUserManageActivity.this, "Clicked On Child",
 				Toast.LENGTH_SHORT).show();
 		return true;
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.user_manager_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent serverIntent = null;
+		switch (item.getItemId()) {
+		case R.id.add_user:
+			// Launch the DeviceListActivity to see devices and do scan
+			serverIntent = new Intent(this, CreateNewUserActivity.class);
+			startActivityForResult(serverIntent, 0);
+			return true;
+		}
+		return false;
 	}
 }

@@ -28,9 +28,20 @@
         <activity
             android:name="com.outsource.ecg.app.ECGUserManageActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:label="@string/select_device">
+            android:label="@string/user_manager_title" >
             <intent-filter>
                 <action android:name="com.outsource.ecg.ECG_MANAGER_MANAGE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.outsource.ecg.app.CreateNewUserActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/new_user_title" >
+            <intent-filter>
+                <action android:name="com.outsource.ecg.ECG_NEW_USER" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

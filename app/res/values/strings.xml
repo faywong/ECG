@@ -23,11 +23,25 @@
     <string name="start_label">Start</string>
     <string name="stop_label">Stop</string>
     <string name="save_label">Save</string>
-    
+
     <!-- ECG user prompts -->
     <string name="external_storage_unmounted_prompt">Please ensure external storage(such as SDCard) is mounted! :)</string>
 
     <!-- Strings for Test -->
     <string name="test_connection_status">Status:Disconnected</string>
+    <!-- Strings for Adding new ECGUser -->
+
+    <string name="add_user">New User</string>
+    <string name="name_label">Name:</string>
+    <string name="male_label">Male</string>
+    <string name="female_label">Female</string>
+    <string name="age_label">Age:</string>
+    <string name="hbr_label">HBR:</string>
+    <string name="commit_new_user_info">Save</string>
+    <string name="commit_new_user_info">Save</string>
+
+    <!-- Strings for Titles -->
+    <string name="user_manager_title">ECGUser Management</string>
+    <string name="new_user_title">Create a new ECGUser</string>
 
 </resources>
