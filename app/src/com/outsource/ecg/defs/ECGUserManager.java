@@ -26,7 +26,7 @@ public class ECGUserManager {
 
 	private ArrayList<ECGUser> mUsers = new ArrayList<ECGUser>();
 
-	private static final ECGUser INVALID_USER = new ECGUser("Invalid", "Invalid", 9999, 0.0);
+	private static final ECGUser INVALID_USER = new ECGUser("Invalid", "Invalid", "1900-12-30", 0.0);
 	private static ECGUser mCurrentUser = INVALID_USER;
 	public String getDataPath() {
 		return DataPath;
@@ -64,8 +64,8 @@ public class ECGUserManager {
 			getAvailableUsers();
 		}
 		if (TEST) {
-			addUser(new ECGUser("faywong1", "male", 25, 46.0));
-			addUser(new ECGUser("faywong2", "female", 23, 48.0));
+			addUser(new ECGUser("faywong1", "male", "2012-12-23", 46.0));
+			addUser(new ECGUser("faywong2", "female", "2012-12-24", 48.0));
 			Log.d(TAG, "All the available users are:" + getAvailableUsers());
 		}
 	}
@@ -142,13 +142,13 @@ public class ECGUserManager {
 				String name = resultSet.getString(ECGUser.COL_NAME_NAME);
 				String gender = resultSet.getString(ECGUser.COL_GENDER_NAME);
 				Log.d(TAG, "name:" + name + " gender:" + gender);
-				int age = resultSet.getInt(ECGUser.COL_AGE_NAME);
+				String birth = resultSet.getString(ECGUser.COL_BIRTH_NAME);
 				double HBR = resultSet.getDouble(ECGUser.COL_HBR_NAME);
 				String enrollDate = resultSet
 						.getString(ECGUser.COL_ENROLL_DATE_NAME);
 				String dataPath = resultSet
 						.getString(ECGUser.COL_DATA_PATH_NAME);
-				ECGUser user = new ECGUser(id, name, gender, age, HBR,
+				ECGUser user = new ECGUser(id, name, gender, birth, HBR,
 						enrollDate, dataPath);
 				mUsers.add(user);
 				Log.d(TAG, "a new ECGUser got: " + user);
