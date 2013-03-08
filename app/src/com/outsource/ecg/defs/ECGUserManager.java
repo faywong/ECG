@@ -4,9 +4,12 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import android.R.bool;
 import android.os.Environment;
 import android.util.Log;
 
@@ -89,16 +92,15 @@ public class ECGUserManager {
 	}
 
 	public boolean addUser(ECGUser user) {
+		Log.d(TAG, "addUser() in");
 		if (null == user) {
 			Log.d(TAG, "user null when addUser()");
 			return false;
 		}
 
 		String url = getJdbcUrlPrefix() + UserManagementDBPath;
-		Connection sqlConnection;
 		try {
-			sqlConnection = DriverManager.getConnection(url);
-
+			Connection sqlConnection = getConnection(UserManagementDBPath);
 			Statement queryStatement = sqlConnection.createStatement();
 			String sql = String.format("INSERT INTO %s %s VALUES %s;",
 					ECG_USER_TABLE, ECGUser.getTableStructure(true),
@@ -116,15 +118,34 @@ public class ECGUserManager {
 		return true;
 	}
 
-	public boolean delUser(ECGUser user) throws MethodNotImplementedException {
-		throw new MethodNotImplementedException();
+	public boolean delUser(ECGUser user)  {
+		if (null == user) {
+			Log.e(TAG, "null user, return!");
+			return false;
+		}
+		
+		try {
+			Connection sqlConnection = getConnection(UserManagementDBPath);
+			Statement delStatement = sqlConnection.createStatement();
+			String sql = String.format("DELETE FROM %s WHERE %s = '%s'", ECG_USER_TABLE, ECGUser.COL_ID_NAME, user.getID());
+			Log.d(TAG, "the sql statement used to delete user:" + sql);
+			boolean delRes = delStatement.execute(sql);
+			Log.e(TAG, "delete user(id:" + user.getID() + ") failed!");
+			return delRes;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return false;
+		}
 	}
 
+	Connection getConnection(String jdbcURL) throws SQLException {
+		return DriverManager.getConnection(getJdbcUrlPrefix() + jdbcURL);
+	}
+	
 	public ArrayList<ECGUser> getAvailableUsers() {
-		String url = getJdbcUrlPrefix() + UserManagementDBPath;
-		Connection sqlConnection;
+		mUsers.clear();
 		try {
-			sqlConnection = DriverManager.getConnection(url);
+			Connection sqlConnection = getConnection(UserManagementDBPath);
 			initDataBase(sqlConnection);
 			Statement queryStatement = sqlConnection.createStatement();
 			// Note:Rowid is a hidden field and is not included in "*"

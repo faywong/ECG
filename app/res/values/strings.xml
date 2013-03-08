@@ -35,7 +35,7 @@
     <string name="name_label">Name:</string>
     <string name="male_label">Male</string>
     <string name="female_label">Female</string>
-    <string name="age_label">Age:</string>
+    <string name="birth_label">Birth:</string>
     <string name="hbr_label">HBR:</string>
     <string name="commit_new_user_info">Save</string>
     <string name="commit_new_user_info">Save</string>

@@ -23,15 +23,13 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#666"
             android:text="@string/name_label"
             android:textColor="#fff" />
 
@@ -50,9 +48,8 @@
 
      <RadioGroup
          android:id="@+id/gender_group"
-         android:layout_width="fill_parent"
-         android:layout_height="0dp"
-         android:layout_weight="1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
          android:checkedButton="@+id/male"
          android:orientation="horizontal" >
 
@@ -65,19 +62,17 @@
              android:text="@string/female_label" />
      </RadioGroup>
      
-    <!-- Age input -->
+    <!-- Birthday input -->
        <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#666"
-            android:text="@string/age_label"
+            android:text="@string/birth_label"
             android:textColor="#fff" />
 
 		<DatePicker 
