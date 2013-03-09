@@ -45,6 +45,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name="com.outsource.ecg.app.ECGUserHistroyRecordActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/view_histroy_records_title" >
+            <intent-filter>
+                <action android:name="com.outsource.ecg.VIEW_HISTORY_RECORDS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
     <uses-sdk

@@ -11,7 +11,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckedTextView;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +22,7 @@ import com.outsource.ecg.defs.ECGUserManager;
 @SuppressWarnings("unchecked")
 public class ECGUserAdapter extends BaseExpandableListAdapter {
 
-	public static final String DATAPATH_EXTRA = "ecg_user_datapath";
+	public static final String CURRENT_USER_EXTRA = "current_ecg_user";
 	public ArrayList<ECGUser> groupItem;
 	public ArrayList<String> tempChild;
 	public ArrayList<Object> childitem = new ArrayList<Object>();
@@ -59,18 +59,24 @@ public class ECGUserAdapter extends BaseExpandableListAdapter {
 			// last child is delete button
 			if (childPosition == (getChildrenCount(groupPosition) - 1)) {
 				convertView = minflater.inflate(R.layout.select_childrow, null);
-				ImageButton selectBtn = (ImageButton) convertView.findViewById(R.id.select_user);
+				Button selectBtn = (Button) convertView.findViewById(R.id.select_user);
 				selectBtn.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
+						try {
+							ECGUserManager.Instance().setCurrentUser(user);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						Toast.makeText(context, "user" + user + " selected!", Toast.LENGTH_SHORT).show();
 						Intent intent = new Intent();
-						  intent.putExtra(ECGUserAdapter.DATAPATH_EXTRA, user.getECGDataPath());
+						  intent.putExtra(ECGUserAdapter.CURRENT_USER_EXTRA, user);
 						  ((Activity)context).setResult(Activity.RESULT_OK, intent);
 						  ((Activity)context).finish();
 					}
 				});
-				ImageButton delBtn = (ImageButton) convertView.findViewById(R.id.delete_user);
+				Button delBtn = (Button) convertView.findViewById(R.id.delete_user);
 				delBtn.setOnClickListener(new OnClickListener() {
 					
 					@Override

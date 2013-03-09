@@ -1,15 +1,20 @@
 package com.outsource.ecg.app;
 
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import org.afree.data.xy.XYSeries;
 import org.afree.data.xy.XYSeriesCollection;
+import org.w3c.dom.UserDataHandler;
 
 import com.outsource.ecg.ui.ECGUserAdapter;
 import com.outsource.ecg.ui.JDBCXYChartView;
 import com.outsource.ecg.ui.XYPlotView;
 import com.outsource.ecg.defs.ECGUser;
 import com.outsource.ecg.defs.ECGUserManager;
+import com.outsource.ecg.defs.ECGUtils;
 import com.outsource.ecg.defs.IDataConnection;
 import com.outsource.ecg.defs.IECGMsgParser;
 import com.outsource.ecg.defs.IECGMsgSegment;
@@ -24,12 +29,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +46,11 @@ import com.outsource.ecg.R;
 public class EcgClientActivity extends Activity implements IECGMsgParser {
 	private static final String TAG = "EcgClient";
 	private static final boolean DEBUG = true;
+	private static final boolean TEST_USER_RECORDS = false;
+	private static final boolean TEST_USER_RECORDS_IN_ACTIVITY = true;
+
 	private static String DB_FILE_NAME = "ecg.sqlite";
-	private String dbFilePath;
+	private String mDBFilePath;
 	private Object listener;
 	private XYSeries mDefaultSeries;
 	private BluetoothAdapter mBluetoothAdapter;
@@ -51,6 +62,8 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 	private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
 	private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
 	private static final int REQUEST_ENABLE_BT = 3;
+	private static final int REQUEST_SELECT_HISTROY_ECG_RECORD = 4;
+
 
 	// Message types sent from the EcgService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
@@ -62,6 +75,16 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 	// Key names received from the EcgService Handler
 	public static final String DEVICE_NAME = "device_name";
 	public static final String TOAST = "toast";
+	private TextView mNameText;
+	private TextView mIDText;
+	private TextView mHBRText;
+	private TextView mConnectionText;
+	private JDBCXYChartView mPlotView;
+	boolean mStarted = false;
+
+	Button mStartStopBtn;
+	// Member object for the ECG services
+	private EcgService mEcgService = null;
 
 	// The Handler that gets information back from the EcgService
 	private final Handler mHandler = new Handler() {
@@ -76,14 +99,12 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 					// setStatus(getString(R.string.title_connected_to,
 					// mConnectedDeviceName));
 					// mConversationArrayAdapter.clear();
-					break;
 				case EcgService.STATE_CONNECTING:
 					// setStatus(R.string.title_connecting);
-					break;
 				case EcgService.STATE_LISTEN:
 				case EcgService.STATE_NONE:
 					// setStatus(R.string.title_not_connected);
-					break;
+					updateConnectionInfo();
 				}
 				break;
 			case MESSAGE_WRITE:
@@ -114,9 +135,6 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 			}
 		}
 	};
-
-	// Member object for the ECG services
-	private EcgService mEcgService = null;
 
 	// External storage state listener
 	private final BroadcastReceiver mSdcardListener = new BroadcastReceiver() {
@@ -154,14 +172,14 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dbFilePath = Environment.getExternalStorageDirectory() + "/ecg/"
-				+ DB_FILE_NAME;
-		// JDBCXYChartView contentView = new JDBCXYChartView(this, dbFilePath);
-		setContentView(R.layout.ecg_client_db);
-		JDBCXYChartView plotView = (JDBCXYChartView) findViewById(R.id.ecg_chart);
-		Log.d(TAG, "the location of DB file:" + dbFilePath);
-		plotView.setDBPath(dbFilePath);
 
+		setContentView(R.layout.ecg_client_db);
+		mPlotView = (JDBCXYChartView) findViewById(R.id.ecg_chart);
+		updatePlotView();
+		mNameText = (TextView) findViewById(R.id.patient_name);
+		mIDText = (TextView) findViewById(R.id.patient_id);
+		mHBRText = (TextView) findViewById(R.id.patient_hbr);
+		mConnectionText = (TextView) findViewById(R.id.connection_status);
 		/*
 		 * setContentView(R.layout.ecg_client_main); XYPlotView plotView =
 		 * (XYPlotView) findViewById(R.id.ecg_chart); XYSeriesCollection series
@@ -193,6 +211,64 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 		intentFilter.addAction(Intent.ACTION_MEDIA_BAD_REMOVAL);
 		intentFilter.addDataScheme("file");
 		registerReceiver(mSdcardListener, intentFilter);
+		mStartStopBtn = (Button) findViewById(R.id.start_stop_btn);
+		mStartStopBtn.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				// first need select a valid ECG User
+				if (!ECGUserManager.getCurrentUser().isValid()) {
+					Toast.makeText(EcgClientActivity.this,
+							"Please select a valid ecg user!",
+							Toast.LENGTH_LONG).show();
+					return;
+				}
+
+				// second need select a valid ECG User
+				if (EcgService.STATE_CONNECTED != EcgClientActivity.this.mEcgService
+						.getState()) {
+					Toast.makeText(EcgClientActivity.this,
+							"Target device is not connected!",
+							Toast.LENGTH_LONG).show();
+					return;
+				}
+
+				synchronized (EcgClientActivity.this) {
+					mStarted = !mStarted;
+					if (mStarted) {
+						mStartStopBtn.setText(R.string.stop_label);
+						// do the real start stuff
+					} else {
+						mStartStopBtn.setText(R.string.start_label);
+						// do the real stop stuff
+					}
+				}
+			}
+		});
+
+		Button loadBtn = (Button) findViewById(R.id.load_btn);
+		loadBtn.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				try {
+					if (!ECGUserManager.Instance().getCurrentUser().isValid()) {
+						Toast.makeText(EcgClientActivity.this,
+								"Please select a valid ecg user!",
+								Toast.LENGTH_LONG).show();
+						return;
+					} else {
+						startActivityForResult(new Intent(EcgClientActivity.this,
+								ECGUserHistroyRecordActivity.class), REQUEST_SELECT_HISTROY_ECG_RECORD);
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -211,33 +287,78 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 		if (null != mEcgService) {
 			mEcgService.start();
 		}
+		updateCurrentUserInfo();
+		updateConnectionInfo();
+	}
+
+	private void updateConnectionInfo() {
+		// TODO Auto-generated method stub
+		switch (mEcgService.getState()) {
+		case EcgService.STATE_CONNECTED:
+			mConnectionText.setText(R.string.connected);
+			break;
+		case EcgService.STATE_CONNECTING:
+			mConnectionText.setText(R.string.connecting);
+			break;
+		case EcgService.STATE_LISTEN:
+			mConnectionText.setText(R.string.listen);
+			break;
+		case EcgService.STATE_NONE:
+		default:
+			mConnectionText.setText(R.string.none);
+			break;
+		}
+	}
+
+	private void updatePlotView() {
+		if (DEBUG) {
+			mDBFilePath = Environment.getExternalStorageDirectory() + "/ecg/"
+					+ DB_FILE_NAME;
+			// JDBCXYChartView contentView = new JDBCXYChartView(this,
+			// mDBFilePath);
+		} else {
+			try {
+				mDBFilePath = ECGUserManager.Instance()
+						.getCurrentUserDataPath();
+				Log.d(TAG, "current user's mDBFilePath:" + mDBFilePath);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		Log.d(TAG, "current user's mDBFilePath:" + mDBFilePath);
+		mPlotView.setDBPath(mDBFilePath, "XYData1"/* test table */);
+	}
+
+	private void updateCurrentUserInfo() {
 		OnClickListener clickListener = new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				EcgClientActivity.this.startActivityForResult(new Intent(ECGUserManageActivity.ACTION_ECG_USER_MANAGE), EcgClientActivity.REQUEST_USER_MANAGE);
+				EcgClientActivity.this.startActivityForResult(new Intent(
+						ECGUserManageActivity.ACTION_ECG_USER_MANAGE),
+						EcgClientActivity.REQUEST_USER_MANAGE);
 			}
 		};
-		TextView nameText = (TextView) findViewById(R.id.patient_name);
-		TextView IDText = (TextView) findViewById(R.id.patient_id);
-		TextView HBRText = (TextView) findViewById(R.id.patient_hbr);
+
 		try {
 			ECGUser currentUser = ECGUserManager.Instance().getCurrentUser();
 			Log.d(TAG,
 					"currentUser:" + currentUser + " valid:"
 							+ currentUser.isValid() + " name:"
 							+ currentUser.getName());
-			if (null != nameText) {
-				nameText.setText("Name:" + currentUser.getName());
-				nameText.setOnClickListener(clickListener);
+			if (null != mNameText) {
+				mNameText.setText("Name:" + currentUser.getName());
+				mNameText.setOnClickListener(clickListener);
 			}
-			if (null != IDText) {
-				IDText.setText("ID:\n" + String.valueOf(currentUser.getID()));
-				IDText.setOnClickListener(clickListener);
+			if (null != mIDText) {
+				mIDText.setText("ID:\n" + String.valueOf(currentUser.getID()));
+				mIDText.setOnClickListener(clickListener);
 			}
-			if (null != HBRText) {
-				HBRText.setText("HBR:\n" + String.valueOf(currentUser.getHBR()));
-				HBRText.setOnClickListener(clickListener);
+			if (null != mHBRText) {
+				mHBRText.setText("HBR:\n"
+						+ String.valueOf(currentUser.getHBR()));
+				mHBRText.setOnClickListener(clickListener);
 			}
 			if (!currentUser.isValid()) {
 				Toast.makeText(
@@ -256,48 +377,6 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		unregisterReceiver(mSdcardListener);
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		if (DEBUG)
-			Log.d(TAG, "onActivityResult " + resultCode);
-
-		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode) {
-		case REQUEST_ENABLE_BT:
-			// When the request to enable Bluetooth returns
-			if (resultCode == Activity.RESULT_OK) {
-				// Bluetooth is now enabled, so set up ECG Service
-				setUpEcgService();
-			} else {
-				// User did not enable Bluetooth or an error occurred
-				Log.d(TAG, "BT not enabled");
-				Toast.makeText(this, R.string.bt_not_enabled_leaving,
-						Toast.LENGTH_SHORT).show();
-				finish();
-			}
-		case REQUEST_CONNECT_DEVICE_SECURE:
-			// When DeviceListActivity returns with a device to connect
-			if (resultCode == Activity.RESULT_OK) {
-				connectDevice(data, true);
-			}
-			break;
-		case REQUEST_CONNECT_DEVICE_INSECURE:
-			// When DeviceListActivity returns with a device to connect
-			if (resultCode == Activity.RESULT_OK) {
-				connectDevice(data, false);
-			}
-			break;
-		case REQUEST_USER_MANAGE:
-			if (resultCode == Activity.RESULT_OK) {
-				String dataPath = data.getStringExtra(ECGUserAdapter.DATAPATH_EXTRA);
-				Toast.makeText(this, "UserManage activity returned dataPath:" + dataPath, Toast.LENGTH_LONG).show();
-			}
-			break;
-		}
-
 	}
 
 	private void setUpEcgService() {
@@ -445,5 +524,94 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		if (DEBUG)
+			Log.d(TAG, "onActivityResult " + resultCode);
+
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case REQUEST_ENABLE_BT:
+			// When the request to enable Bluetooth returns
+			if (resultCode == Activity.RESULT_OK) {
+				// Bluetooth is now enabled, so set up ECG Service
+				setUpEcgService();
+			} else {
+				// User did not enable Bluetooth or an error occurred
+				Log.d(TAG, "BT not enabled");
+				Toast.makeText(this, R.string.bt_not_enabled_leaving,
+						Toast.LENGTH_SHORT).show();
+				finish();
+			}
+		case REQUEST_CONNECT_DEVICE_SECURE:
+			// When DeviceListActivity returns with a device to connect
+			if (resultCode == Activity.RESULT_OK) {
+				connectDevice(data, true);
+			}
+			break;
+		case REQUEST_CONNECT_DEVICE_INSECURE:
+			// When DeviceListActivity returns with a device to connect
+			if (resultCode == Activity.RESULT_OK) {
+				connectDevice(data, false);
+			}
+			break;
+		case REQUEST_USER_MANAGE:
+			if (resultCode == Activity.RESULT_OK) {
+				ECGUser user = data
+						.getParcelableExtra(ECGUserAdapter.CURRENT_USER_EXTRA);
+				updateCurrentUserInfo();
+				Toast.makeText(this,
+						"UserManage activity returned user:" + user,
+						Toast.LENGTH_LONG).show();
+
+				if (TEST_USER_RECORDS) {
+					Toast.makeText(this, "TEST_USER_RECORDS START:",
+							Toast.LENGTH_LONG).show();
+
+					ArrayList<Double> series = new ArrayList<Double>();
+					series.add(4.10);
+					series.add(4.12);
+					series.add(4.16);
+					series.add(4.19);
+					series.add(4.20);
+					series.add(4.22);
+					series.add(4.29);
+
+					try {
+						Connection connection = ECGUtils
+								.getConnection(ECGUserManager
+										.getCurrentUserDataPath());
+						ECGUserManager.createUserHistroyRecord(connection,
+								ECGUtils.createRecordTableFromDate(), series,
+								0.1);
+						for (String recordID : ECGUserManager
+								.getUserHistroyRecords(connection,
+										ECGUserManager.getCurrentUser())) {
+							Log.d(TAG, "Record: " + recordID);
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					Toast.makeText(this, "TEST_USER_RECORDS END:",
+							Toast.LENGTH_LONG).show();
+				}
+			}
+			break;
+			
+		case REQUEST_SELECT_HISTROY_ECG_RECORD:
+			if (resultCode == Activity.RESULT_OK) {
+				String recordID = data
+						.getStringExtra(ECGUserHistroyRecordActivity.EXTRA_TARGET_RECORD_ID);
+				Log.d(TAG, "The recordID selected is " + recordID);
+				mPlotView.setDBPath(ECGUserManager.getCurrentUserDataPath(), recordID);
+			}
+			break;
+		}
+
 	}
 }

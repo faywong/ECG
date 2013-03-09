@@ -8,8 +8,15 @@
     android:paddingLeft="40dp"
     tools:context=".app.ECGUserManageActivity" >
 
+    <TextView
+        android:id="@+id/record"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2" >
+    </TextView>
+
     <Button
-        android:id="@+id/delete_user"
+        android:id="@+id/delete_record"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -17,7 +24,7 @@
     </Button>
 
     <Button
-        android:id="@+id/select_user"
+        android:id="@+id/select_record"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

@@ -7,11 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import android.R.bool;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.SimpleAdapter;
 
 public class ECGUserManager {
 	private static final String TAG = "EKGUserManager";
@@ -25,12 +27,12 @@ public class ECGUserManager {
 			.getExternalStorageDirectory() + ECG_RELATIVE_PATH;
 	private static final String UserManagementDBPath = DataPath
 			+ "/user.sqlite";
-	private static final String JDBC_URL_PREFIX = "jdbc:sqldroid:";
 
 	private ArrayList<ECGUser> mUsers = new ArrayList<ECGUser>();
 
 	private static final ECGUser INVALID_USER = new ECGUser("Invalid", "Invalid", "1900-12-30", 0.0);
 	private static ECGUser mCurrentUser = INVALID_USER;
+	
 	public String getDataPath() {
 		return DataPath;
 	}
@@ -73,22 +75,99 @@ public class ECGUserManager {
 		}
 	}
 	
-	public ECGUser getCurrentUser() {
+	public static ECGUser getCurrentUser() {
 		// TODO Auto-generated constructor stub
 		return mCurrentUser;
 	}
 	
+	public static String getCurrentUserDataPath() {
+		// TODO Auto-generated constructor stub
+		return DataPath + "/" + mCurrentUser.getECGDataPath();
+	}
+	
+	public static void setCurrentUser(ECGUser user) {
+		// TODO Auto-generated constructor stub
+		synchronized (ECGUserManager.class) {
+			mCurrentUser = user;
+		}
+	}
+	
 	/**
-	 * Initialize table.
+	 * Initialize system global user info database.
+	 * ensure there's at least one table to store user metadata
 	 * 
 	 * @param con
 	 */
-	private static void initDataBase(Connection con) throws Exception {
+	private static void initUserInfoDataBase(Connection con) throws Exception {
 		String sql = "CREATE TABLE if not exists " + ECG_USER_TABLE + " "
-						+ ECGUser.getTableStructure(false);
+						+ ECGUser.getUserInfoTableStructure(false);
 		
 		boolean create = con.createStatement().execute(sql);
 		Log.d(TAG, "create table ECG_USER sql:" + sql + " result:" + create);
+	}
+	
+	/**
+	 * Initialize system global per-user ecg history records database.
+	 * 
+	 * @param con
+	 */
+	public static void createUserHistroyRecord(Connection con, String table, Collection<Double> series, double avgXoffset) {
+		String sql = String.format("CREATE TABLE if not exists %s %s", table, ECGUser.getHistoyRecordTableStructure(false));
+		Log.d(TAG, "sql to create histroy table:" + sql);
+		boolean createRes = false;
+		try {
+			createRes = con.createStatement().execute(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.d(TAG, "create table ECG_USER sql:" + sql + " result:" + createRes);
+		
+		// TODO: insert the series data
+		double x = 0.0;
+		for (double y : series) {
+			x += avgXoffset;
+		    String insertSql = String.format("INSERT INTO %s %s VALUES (%f, %f)", table, ECGUser.getHistoyRecordTableStructure(true), x, y);
+			boolean insertRes = false;
+			try {
+				insertRes = con.createStatement().execute(insertSql);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Log.d(TAG, "sql to insert series data:" + insertSql + " result:" + insertRes);
+		}
+	}
+	
+	/**
+	 * Initialize system global per-user ecg history records database.
+	 * 
+	 * @param con
+	 */
+	public static ArrayList<String> getUserHistroyRecords(Connection con, ECGUser user) {
+		String sql = String.format("SELECT name FROM sqlite_master WHERE type = 'table'");
+		Log.d(TAG, "sql to create histroy table:" + sql);
+		ArrayList<String> records = new ArrayList<String>();
+		ResultSet queryResultSet = null;
+		try {
+			queryResultSet = con.createStatement().executeQuery(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			while (queryResultSet.next()) {
+				String recordName = queryResultSet.getString("name");
+				Log.d(TAG, "record table name is " + recordName);
+				if (ECGUtils.validRecordTable(recordName)) {
+					records.add(recordName);
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return records;
 	}
 
 	public boolean addUser(ECGUser user) {
@@ -98,12 +177,12 @@ public class ECGUserManager {
 			return false;
 		}
 
-		String url = getJdbcUrlPrefix() + UserManagementDBPath;
+		String url = ECGUtils.getJdbcUrlPrefix() + UserManagementDBPath;
 		try {
-			Connection sqlConnection = getConnection(UserManagementDBPath);
+			Connection sqlConnection = ECGUtils.getConnection(UserManagementDBPath);
 			Statement queryStatement = sqlConnection.createStatement();
 			String sql = String.format("INSERT INTO %s %s VALUES %s;",
-					ECG_USER_TABLE, ECGUser.getTableStructure(true),
+					ECG_USER_TABLE, ECGUser.getUserInfoTableStructure(true),
 					user.getValues());
 			Log.d(TAG, "insert sql:" + sql);
 			boolean addUsersRes = queryStatement.execute(sql);
@@ -125,7 +204,7 @@ public class ECGUserManager {
 		}
 		
 		try {
-			Connection sqlConnection = getConnection(UserManagementDBPath);
+			Connection sqlConnection = ECGUtils.getConnection(UserManagementDBPath);
 			Statement delStatement = sqlConnection.createStatement();
 			String sql = String.format("DELETE FROM %s WHERE %s = '%s'", ECG_USER_TABLE, ECGUser.COL_ID_NAME, user.getID());
 			Log.d(TAG, "the sql statement used to delete user:" + sql);
@@ -138,15 +217,12 @@ public class ECGUserManager {
 		}
 	}
 
-	Connection getConnection(String jdbcURL) throws SQLException {
-		return DriverManager.getConnection(getJdbcUrlPrefix() + jdbcURL);
-	}
 	
 	public ArrayList<ECGUser> getAvailableUsers() {
 		mUsers.clear();
 		try {
-			Connection sqlConnection = getConnection(UserManagementDBPath);
-			initDataBase(sqlConnection);
+			Connection sqlConnection = ECGUtils.getConnection(UserManagementDBPath);
+			initUserInfoDataBase(sqlConnection);
 			Statement queryStatement = sqlConnection.createStatement();
 			// Note:Rowid is a hidden field and is not included in "*"
 			String sql = String.format("SELECT %s,* FROM %s", ECGUser.COL_ID_NAME, ECG_USER_TABLE);
@@ -167,8 +243,8 @@ public class ECGUserManager {
 				double HBR = resultSet.getDouble(ECGUser.COL_HBR_NAME);
 				String enrollDate = resultSet
 						.getString(ECGUser.COL_ENROLL_DATE_NAME);
-				String dataPath = resultSet
-						.getString(ECGUser.COL_DATA_PATH_NAME);
+/*				String dataPath = resultSet
+						.getString(ECGUser.COL_DATA_PATH_NAME);*/
 				ECGUser user = new ECGUser(id, name, gender, birth, HBR,
 						enrollDate);
 				mUsers.add(user);
@@ -182,10 +258,6 @@ public class ECGUserManager {
 		return mUsers;
 	}
 
-	public ECGRecord getHistroyRecords() {
-		return null;
-	}
-
 	public DBHelper getDBHelper() {
 		if (null == mDBHelper) {
 			mDBHelper = new MyDBHelper();
@@ -193,9 +265,6 @@ public class ECGUserManager {
 		return mDBHelper;
 	}
 
-	public static String getJdbcUrlPrefix() {
-		return JDBC_URL_PREFIX;
-	}
 
 	public static String getUsermanagementDBPath() {
 		return UserManagementDBPath;
@@ -229,33 +298,5 @@ public class ECGUserManager {
 		public boolean populateFromDB(String db);
 
 		public ECGUser queryUserByID();
-	}
-
-	private static class MethodNotImplementedException extends Exception {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public String getMessage() {
-			// TODO Auto-generated method stub
-			return "This method is not implemted yet as faywong(philip584521@gmail.com) is so busy!";
-		}
-
-		@Override
-		public void printStackTrace() {
-			// TODO Auto-generated method stub
-			super.printStackTrace();
-		}
-
-		@Override
-		public String toString() {
-			// TODO Auto-generated method stub
-			return "This method is not implemted yet as faywong(philip584521@gmail.com) is so busy!";
-
-		}
-
 	}
 }

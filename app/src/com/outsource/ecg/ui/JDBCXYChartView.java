@@ -80,10 +80,10 @@ public class JDBCXYChartView extends BaseChartView {
 	 * 
 	 * @param context
 	 */
-	public JDBCXYChartView(Context context, String dbFilePath) {
+	public JDBCXYChartView(Context context, String dbFilePath, String table) {
 		super(context);
 
-		final AFreeChart chart = createChart(dbFilePath);
+		final AFreeChart chart = createChart(dbFilePath, table);
 
 		setChart(chart);
 	}
@@ -92,8 +92,8 @@ public class JDBCXYChartView extends BaseChartView {
 	 * set the local file system path of DB file
 	 * @param dbFilePath
 	 */
-	public void setDBPath(String dbFilePath) {
-		final AFreeChart chart = createChart(dbFilePath);
+	public void setDBPath(String dbFilePath, String table) {
+		final AFreeChart chart = createChart(dbFilePath, table);
 		Log.d(TAG, "Ready to create chart, dbFilePath: " + dbFilePath);
 		setChart(chart);
 		invalidate();
@@ -147,7 +147,7 @@ public class JDBCXYChartView extends BaseChartView {
 	 * 
 	 * @return a sample dataset.
 	 */
-	private static XYDataset createDataset(String dbFilePath) {
+	private static XYDataset createDataset(String dbFilePath, String table) {
 
 		JDBCXYDataset data = null;
 
@@ -169,7 +169,7 @@ public class JDBCXYChartView extends BaseChartView {
 			init(sqlConnection);
 
 			data = new JDBCXYDataset(sqlConnection);
-			String sql = "SELECT * FROM XYDATA1;";
+			String sql = String.format("SELECT * FROM %s;", table);
 			data.executeQuery(sql);
 			sqlConnection.close();
 		}
@@ -194,10 +194,10 @@ public class JDBCXYChartView extends BaseChartView {
 	 *            the dataset for the chart.
 	 * @return a sample chart.
 	 */
-	private static AFreeChart createChart(String dbFilePath) {
+	private static AFreeChart createChart(String dbFilePath, String table) {
 
 		// read the data from the database...
-		XYDataset data = createDataset(dbFilePath);
+		XYDataset data = createDataset(dbFilePath, table);
 
 		// create the chart...
 /*		AFreeChart chart = ChartFactory.createTimeSeriesChart("ECG Chart", // chart

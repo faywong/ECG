@@ -23,6 +23,9 @@
     <string name="start_label">Start</string>
     <string name="stop_label">Stop</string>
     <string name="save_label">Save</string>
+    <string name="load_label">Load</string>
+    <string name="select">Select</string>
+    <string name="delete">Delect</string>
 
     <!-- ECG user prompts -->
     <string name="external_storage_unmounted_prompt">Please ensure external storage(such as SDCard) is mounted! :)</string>
@@ -43,5 +46,11 @@
     <!-- Strings for Titles -->
     <string name="user_manager_title">ECGUser Management</string>
     <string name="new_user_title">Create a new ECGUser</string>
+    <string name="view_histroy_records_title">History ECG Records</string>
+    <!-- Connection Status -->
+    <string name="connected">Connected</string>
+    <string name="connecting">Disconnected</string>
+    <string name="none">Disconnected</string>
+    <string name="listen">Listening</string>
 
 </resources>

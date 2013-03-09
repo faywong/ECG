@@ -59,6 +59,7 @@ public class EcgService {
     private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
+    private ConnectionStatusListener mListener;
     private int mState;
 
     // Constants that indicate the current connection state
@@ -78,6 +79,13 @@ public class EcgService {
         mHandler = handler;
     }
 
+    public static interface ConnectionStatusListener {
+    	void onConnectionStatusChanged(int oldStatus, int newStatus);
+    }
+    
+    public void setConnectionInfoListener(ConnectionStatusListener listener) {
+    	mListener = listener;
+    }
     /**
      * Set the current state of the chat connection
      * @param state  An integer defining the current connection state
@@ -120,6 +128,7 @@ public class EcgService {
             mInsecureAcceptThread.start();
         }
     }
+    
 
     /**
      * Start the ConnectThread to initiate a connection to a remote device.
