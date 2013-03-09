@@ -48,9 +48,9 @@
     <string name="new_user_title">Create a new ECGUser</string>
     <string name="view_histroy_records_title">History ECG Records</string>
     <!-- Connection Status -->
-    <string name="connected">Connected</string>
-    <string name="connecting">Disconnected</string>
-    <string name="none">Disconnected</string>
-    <string name="listen">Listening</string>
+    <string name="connected">Status:\nConnected</string>
+    <string name="connecting">Status:\nDisconnected</string>
+    <string name="none">Status:\nDisconnected</string>
+    <string name="listen">Status:\nListening</string>
 
 </resources>

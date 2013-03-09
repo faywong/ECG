@@ -59,8 +59,8 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 				groupItem.add(user);
 				ArrayList<String> child = new ArrayList<String>();
 				child.add(user.getIDDesc());
-				child.add(user.getGender());
-				child.add(user.getBirth());
+				child.add(user.getGenderDesc());
+				child.add(user.getBirthDesc());
 				child.add(user.getHBRDesc());
 				child.add(user.getECGDataPathDesc());
 				child.add(user.getEnrollDataDesc());

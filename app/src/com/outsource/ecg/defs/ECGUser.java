@@ -94,6 +94,14 @@ public class ECGUser implements Parcelable {
 	public String getGender() {
 		return mGender;
 	}
+	
+	public String getGenderDesc() {
+		return "Gender:" + mGender;
+	}
+	
+	public String getBirthDesc() {
+		return "Birth:" + mBirth;
+	}
 
 	public String getEnrollDataDesc() {
 		return "Enroll Date:" + mEnrollDate;
