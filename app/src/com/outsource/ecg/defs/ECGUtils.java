@@ -9,6 +9,8 @@ import java.util.Date;
 public class ECGUtils {
 	private static final String JDBC_URL_PREFIX = "jdbc:sqldroid:";
 	private static final String RECORD_TABLE_PREFIX = "_";
+	public static final String ACTION_ECG_USER_MANAGE = "com.outsource.ecg.ECG_MANAGER_MANAGE";
+
 	public static String getCurrentDataTime() {
 		return new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss")
 		.format(new Date());

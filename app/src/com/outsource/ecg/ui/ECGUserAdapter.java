@@ -63,12 +63,8 @@ public class ECGUserAdapter extends BaseExpandableListAdapter {
 				selectBtn.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						try {
-							ECGUserManager.Instance().setCurrentUser(user);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						ECGUserManager.setCurrentUser(user);
+
 						Toast.makeText(context, "user" + user + " selected!", Toast.LENGTH_SHORT).show();
 						Intent intent = new Intent();
 						  intent.putExtra(ECGUserAdapter.CURRENT_USER_EXTRA, user);

@@ -1,23 +1,15 @@
 package com.outsource.ecg.app;
 
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.afree.data.xy.XYSeries;
-import org.afree.data.xy.XYSeriesCollection;
-import org.w3c.dom.UserDataHandler;
-
 import com.outsource.ecg.ui.ECGUserAdapter;
 import com.outsource.ecg.ui.JDBCXYChartView;
-import com.outsource.ecg.ui.XYPlotView;
 import com.outsource.ecg.defs.ECGUser;
 import com.outsource.ecg.defs.ECGUserManager;
 import com.outsource.ecg.defs.ECGUtils;
-import com.outsource.ecg.defs.IDataConnection;
-import com.outsource.ecg.defs.IECGMsgParser;
-import com.outsource.ecg.defs.IECGMsgSegment;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -29,8 +21,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,11 +33,10 @@ import android.widget.Toast;
 
 import com.outsource.ecg.R;
 
-public class EcgClientActivity extends Activity implements IECGMsgParser {
+public class EcgClientActivity extends Activity {
 	private static final String TAG = "EcgClient";
 	private static final boolean DEBUG = true;
 	private static final boolean TEST_USER_RECORDS = false;
-	private static final boolean TEST_USER_RECORDS_IN_ACTIVITY = true;
 
 	private static String DB_FILE_NAME = "ecg.sqlite";
 	private String mDBFilePath;
@@ -63,7 +52,6 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 	private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
 	private static final int REQUEST_ENABLE_BT = 3;
 	private static final int REQUEST_SELECT_HISTROY_ECG_RECORD = 4;
-
 
 	// Message types sent from the EcgService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
@@ -253,20 +241,17 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				try {
-					if (!ECGUserManager.Instance().getCurrentUser().isValid()) {
-						Toast.makeText(EcgClientActivity.this,
-								"Please select a valid ecg user!",
-								Toast.LENGTH_LONG).show();
-						return;
-					} else {
-						startActivityForResult(new Intent(EcgClientActivity.this,
-								ECGUserHistroyRecordActivity.class), REQUEST_SELECT_HISTROY_ECG_RECORD);
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (!ECGUserManager.getCurrentUser().isValid()) {
+					Toast.makeText(EcgClientActivity.this,
+							"Please select a valid ecg user!",
+							Toast.LENGTH_LONG).show();
+					return;
+				} else {
+					startActivityForResult(new Intent(EcgClientActivity.this,
+							ECGUserHistroyRecordActivity.class),
+							REQUEST_SELECT_HISTROY_ECG_RECORD);
 				}
+
 			}
 		});
 	}
@@ -317,14 +302,9 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 			// JDBCXYChartView contentView = new JDBCXYChartView(this,
 			// mDBFilePath);
 		} else {
-			try {
-				mDBFilePath = ECGUserManager.Instance()
-						.getCurrentUserDataPath();
-				Log.d(TAG, "current user's mDBFilePath:" + mDBFilePath);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			mDBFilePath = ECGUserManager.getCurrentUserDataPath();
+			Log.d(TAG, "current user's mDBFilePath:" + mDBFilePath);
+
 		}
 		Log.d(TAG, "current user's mDBFilePath:" + mDBFilePath);
 		mPlotView.setDBPath(mDBFilePath, "XYData1"/* test table */);
@@ -336,40 +316,35 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 			@Override
 			public void onClick(View v) {
 				EcgClientActivity.this.startActivityForResult(new Intent(
-						ECGUserManageActivity.ACTION_ECG_USER_MANAGE),
+						ECGUtils.ACTION_ECG_USER_MANAGE),
 						EcgClientActivity.REQUEST_USER_MANAGE);
 			}
 		};
 
-		try {
-			ECGUser currentUser = ECGUserManager.Instance().getCurrentUser();
-			Log.d(TAG,
-					"currentUser:" + currentUser + " valid:"
-							+ currentUser.isValid() + " name:"
-							+ currentUser.getName());
-			if (null != mNameText) {
-				mNameText.setText("Name:" + currentUser.getName());
-				mNameText.setOnClickListener(clickListener);
-			}
-			if (null != mIDText) {
-				mIDText.setText("ID:\n" + String.valueOf(currentUser.getID()));
-				mIDText.setOnClickListener(clickListener);
-			}
-			if (null != mHBRText) {
-				mHBRText.setText("HBR:\n"
-						+ String.valueOf(currentUser.getHBR()));
-				mHBRText.setOnClickListener(clickListener);
-			}
-			if (!currentUser.isValid()) {
-				Toast.makeText(
-						this,
-						"Current user is invalid, Please press to set user information!",
-						Toast.LENGTH_LONG).show();
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		ECGUser currentUser = ECGUserManager.getCurrentUser();
+		Log.d(TAG,
+				"currentUser:" + currentUser + " valid:"
+						+ currentUser.isValid() + " name:"
+						+ currentUser.getName());
+		if (null != mNameText) {
+			mNameText.setText("Name:" + currentUser.getName());
+			mNameText.setOnClickListener(clickListener);
 		}
+		if (null != mIDText) {
+			mIDText.setText("ID:\n" + String.valueOf(currentUser.getID()));
+			mIDText.setOnClickListener(clickListener);
+		}
+		if (null != mHBRText) {
+			mHBRText.setText("HBR:\n" + String.valueOf(currentUser.getHBR()));
+			mHBRText.setOnClickListener(clickListener);
+		}
+		if (!currentUser.isValid()) {
+			Toast.makeText(
+					this,
+					"Current user is invalid, Please press to set user information!",
+					Toast.LENGTH_LONG).show();
+		}
+
 	}
 
 	@Override
@@ -381,7 +356,9 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 
 	private void setUpEcgService() {
 		// Initialize the BluetoothChatService to perform bluetooth connections
-		mEcgService = new EcgService(this, mHandler);
+		if (null == mEcgService) {
+			mEcgService = new EcgService(this, mHandler);
+		}
 	}
 
 	private void ensureDiscoverable() {
@@ -447,53 +424,6 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 					"FATAL ERROR! The selected device for connect has no address!");
 		}
 
-	}
-
-	@Override
-	public IECGMsgSegment getSegment() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean setDataSource(IDataConnection connection) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean setDataSource(InputStreamReader reader) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean start() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean stop() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void recycle() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean setOnDataCaptureListener(OnDataCaptureListener listener) {
-		// TODO Auto-generated method stub
-		if (this.listener == null && listener != null) {
-			this.listener = listener;
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	@Override
@@ -602,13 +532,14 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 				}
 			}
 			break;
-			
+
 		case REQUEST_SELECT_HISTROY_ECG_RECORD:
 			if (resultCode == Activity.RESULT_OK) {
 				String recordID = data
 						.getStringExtra(ECGUserHistroyRecordActivity.EXTRA_TARGET_RECORD_ID);
 				Log.d(TAG, "The recordID selected is " + recordID);
-				mPlotView.setDBPath(ECGUserManager.getCurrentUserDataPath(), recordID);
+				mPlotView.setDBPath(ECGUserManager.getCurrentUserDataPath(),
+						recordID);
 			}
 			break;
 		}

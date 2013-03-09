@@ -10,11 +10,21 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/icon"
-        android:label="@string/app_name" >
+        android:icon="@drawable/ecg_mobile"
+        android:label="@string/ecg_client_title" >
         <activity
             android:name="com.outsource.ecg.app.EcgClientActivity"
-            android:label="@string/app_name" >
+            android:label="@string/ecg_client_title" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.outsource.ecg.app.EcgServerActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/ecg_server_title" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,13 +55,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        
         <activity
             android:name="com.outsource.ecg.app.ECGUserHistroyRecordActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/view_histroy_records_title" >
             <intent-filter>
                 <action android:name="com.outsource.ecg.VIEW_HISTORY_RECORDS" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

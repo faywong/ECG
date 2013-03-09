@@ -23,7 +23,6 @@ import com.outsource.ecg.defs.ECGUser;
 public class ECGUserManageActivity extends ExpandableListActivity implements
 		OnChildClickListener {
 	private static final String TAG = "ECGUserManageActivity";
-	public static final String ACTION_ECG_USER_MANAGE = "com.outsource.ecg.ECG_MANAGER_MANAGE";
 	static final int CREATE_USER_REQUEST = 0;
 
 	ArrayList<ECGUser> groupItem = new ArrayList<ECGUser>();
