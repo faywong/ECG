@@ -15,7 +15,7 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/add_user"
-          android:icon="@android:drawable/ic_menu_search"
+          android:icon="@drawable/new_user"
           android:title="@string/add_user"
           />
 </menu>

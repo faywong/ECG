@@ -30,19 +30,25 @@ public class CreateNewUserActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				setTitle(String.valueOf(mDatePicker.getYear()) + "年"
-						+ String.valueOf(mDatePicker.getMonth() + 1) + "月"
-						+ String.valueOf(mDatePicker.getDayOfMonth()) + "日");
 				String birthday = String.valueOf(mDatePicker.getYear()) + "-"
-						+ String.valueOf(mDatePicker.getMonth());
+						+ String.valueOf(mDatePicker.getMonth() + 1);
 				String name = mNameInput.getText().toString();
+				if (name.isEmpty()) {
+					Toast.makeText(CreateNewUserActivity.this, "Name is empty, please retry!", Toast.LENGTH_SHORT).show();
+					return;
+				}
 				try {
 					ECGUserManager.Instance().addUser(
-							new ECGUser(name, mGender, birthday, 64.0));
+							new ECGUser(name, mGender, birthday, 0.0));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					Toast.makeText(CreateNewUserActivity.this, "Create new user failed!", Toast.LENGTH_LONG).show();
+					setResult(Activity.RESULT_CANCELED); 
+					finish();
 				}
+				setResult(Activity.RESULT_OK); 
+				finish();
 			}
 		});
 		mDatePicker = (DatePicker) findViewById(R.id.date_picker);
@@ -54,13 +60,9 @@ public class CreateNewUserActivity extends Activity {
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				// TODO Auto-generated method stub
 				if (checkedId == R.id.male_radio) {
-					Toast.makeText(CreateNewUserActivity.this, "Male选中",
-							Toast.LENGTH_LONG).show();
 					CreateNewUserActivity.this.mGender = "male";
 				}
 				if (checkedId == R.id.female_radio) {
-					Toast.makeText(CreateNewUserActivity.this, "Female选中",
-							Toast.LENGTH_LONG).show();
 					CreateNewUserActivity.this.mGender = "female";
 				}
 			}

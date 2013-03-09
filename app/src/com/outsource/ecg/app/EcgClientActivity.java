@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import org.afree.data.xy.XYSeries;
 import org.afree.data.xy.XYSeriesCollection;
 
+import com.outsource.ecg.ui.ECGUserAdapter;
 import com.outsource.ecg.ui.JDBCXYChartView;
 import com.outsource.ecg.ui.XYPlotView;
 import com.outsource.ecg.defs.ECGUser;
@@ -46,6 +47,7 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 	private String mConnectedDeviceName = null;
 
 	// Intent request codes
+	private static final int REQUEST_USER_MANAGE = 0;
 	private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
 	private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
 	private static final int REQUEST_ENABLE_BT = 3;
@@ -213,7 +215,7 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 
 			@Override
 			public void onClick(View v) {
-				EcgClientActivity.this.startActivityForResult(new Intent(ECGUserManageActivity.ACTION_ECG_USER_MANAGE), 0);
+				EcgClientActivity.this.startActivityForResult(new Intent(ECGUserManageActivity.ACTION_ECG_USER_MANAGE), EcgClientActivity.REQUEST_USER_MANAGE);
 			}
 		};
 		TextView nameText = (TextView) findViewById(R.id.patient_name);
@@ -286,6 +288,12 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 			// When DeviceListActivity returns with a device to connect
 			if (resultCode == Activity.RESULT_OK) {
 				connectDevice(data, false);
+			}
+			break;
+		case REQUEST_USER_MANAGE:
+			if (resultCode == Activity.RESULT_OK) {
+				String dataPath = data.getStringExtra(ECGUserAdapter.DATAPATH_EXTRA);
+				Toast.makeText(this, "UserManage activity returned dataPath:" + dataPath, Toast.LENGTH_LONG).show();
 			}
 			break;
 		}
@@ -438,5 +446,4 @@ public class EcgClientActivity extends Activity implements IECGMsgParser {
 		}
 		return false;
 	}
-
 }

@@ -2,7 +2,9 @@ package com.outsource.ecg.ui;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +22,7 @@ import com.outsource.ecg.defs.ECGUserManager;
 @SuppressWarnings("unchecked")
 public class ECGUserAdapter extends BaseExpandableListAdapter {
 
+	public static final String DATAPATH_EXTRA = "ecg_user_datapath";
 	public ArrayList<ECGUser> groupItem;
 	public ArrayList<String> tempChild;
 	public ArrayList<Object> childitem = new ArrayList<Object>();
@@ -55,7 +58,18 @@ public class ECGUserAdapter extends BaseExpandableListAdapter {
 		if (convertView == null) {
 			// last child is delete button
 			if (childPosition == (getChildrenCount(groupPosition) - 1)) {
-				convertView = minflater.inflate(R.layout.delete_childrow, null);
+				convertView = minflater.inflate(R.layout.select_childrow, null);
+				ImageButton selectBtn = (ImageButton) convertView.findViewById(R.id.select_user);
+				selectBtn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Toast.makeText(context, "user" + user + " selected!", Toast.LENGTH_SHORT).show();
+						Intent intent = new Intent();
+						  intent.putExtra(ECGUserAdapter.DATAPATH_EXTRA, user.getECGDataPath());
+						  ((Activity)context).setResult(Activity.RESULT_OK, intent);
+						  ((Activity)context).finish();
+					}
+				});
 				ImageButton delBtn = (ImageButton) convertView.findViewById(R.id.delete_user);
 				delBtn.setOnClickListener(new OnClickListener() {
 					
@@ -65,6 +79,9 @@ public class ECGUserAdapter extends BaseExpandableListAdapter {
 						try {
 							if (!ECGUserManager.Instance().delUser(user)) {
 								Toast.makeText(context, "Delete user" + user + " failed!", Toast.LENGTH_LONG).show();
+							} else {
+								ECGUserAdapter.this.groupItem.remove(user);
+								ECGUserAdapter.this.notifyDataSetChanged();
 							}
 						} catch (Exception e) {
 							// TODO: handle exception
@@ -72,6 +89,7 @@ public class ECGUserAdapter extends BaseExpandableListAdapter {
 						}
 					}
 				});
+
 			} else {
 				convertView = minflater.inflate(R.layout.childrow, null);
 				text = (TextView) convertView.findViewById(R.id.textView1);

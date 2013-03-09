@@ -24,7 +24,11 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 		OnChildClickListener {
 	private static final String TAG = "ECGUserManageActivity";
 	public static final String ACTION_ECG_USER_MANAGE = "com.outsource.ecg.ECG_MANAGER_MANAGE";
+	static final int CREATE_USER_REQUEST = 0;
 
+	ArrayList<ECGUser> groupItem = new ArrayList<ECGUser>();
+	ArrayList<Object> childItem = new ArrayList<Object>();
+	ECGUserAdapter mECGUserAdapter;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,7 +39,7 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 
 		setGroupData();
 
-		ECGUserAdapter mECGUserAdapter = new ECGUserAdapter(groupItem,
+		mECGUserAdapter = new ECGUserAdapter(groupItem,
 				childItem);
 		mECGUserAdapter
 				.setInflater(
@@ -46,6 +50,8 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 	}
 
 	public void setGroupData() {
+		groupItem.clear();
+		childItem.clear();
 		try {
 			ArrayList<ECGUser> users = ECGUserManager.Instance()
 					.getAvailableUsers();
@@ -54,9 +60,12 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 				ArrayList<String> child = new ArrayList<String>();
 				child.add(user.getIDDesc());
 				child.add(user.getGender());
+				child.add(user.getBirth());
 				child.add(user.getHBRDesc());
 				child.add(user.getECGDataPathDesc());
 				child.add(user.getEnrollDataDesc());
+				// the last one child is fake object for place "delete" & "select" button
+				child.add(String.valueOf(user.getID()));
 				childItem.add(child);
 			}
 		} catch (Exception ex) {
@@ -64,9 +73,6 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 
 		}
 	}
-
-	ArrayList<ECGUser> groupItem = new ArrayList<ECGUser>();
-	ArrayList<Object> childItem = new ArrayList<Object>();
 
 	@Override
 	public boolean onChildClick(ExpandableListView parent, View v,
@@ -90,9 +96,29 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 		case R.id.add_user:
 			// Launch the DeviceListActivity to see devices and do scan
 			serverIntent = new Intent(this, CreateNewUserActivity.class);
-			startActivityForResult(serverIntent, 0);
+			startActivityForResult(serverIntent, CREATE_USER_REQUEST);
 			return true;
 		}
 		return false;
 	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+        if (requestCode == CREATE_USER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                // A contact was picked.  Here we will just display it
+                // to the user.
+                Toast.makeText(this, "A new user created success!", Toast.LENGTH_LONG).show();
+                // update the user info
+                setGroupData();
+                mECGUserAdapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(this, "A new user created failed!", Toast.LENGTH_LONG).show();
+            }
+        }
+
+		
+	}
+	
 }

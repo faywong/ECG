@@ -129,9 +129,9 @@ public class ECGUserManager {
 			Statement delStatement = sqlConnection.createStatement();
 			String sql = String.format("DELETE FROM %s WHERE %s = '%s'", ECG_USER_TABLE, ECGUser.COL_ID_NAME, user.getID());
 			Log.d(TAG, "the sql statement used to delete user:" + sql);
-			boolean delRes = delStatement.execute(sql);
-			Log.e(TAG, "delete user(id:" + user.getID() + ") failed!");
-			return delRes;
+			delStatement.execute(sql);
+			// no exception arised, treat as true case
+			return true;
 		} catch (Exception e) {
 			// TODO: handle exception
 			return false;
@@ -170,7 +170,7 @@ public class ECGUserManager {
 				String dataPath = resultSet
 						.getString(ECGUser.COL_DATA_PATH_NAME);
 				ECGUser user = new ECGUser(id, name, gender, birth, HBR,
-						enrollDate, dataPath);
+						enrollDate);
 				mUsers.add(user);
 				Log.d(TAG, "a new ECGUser got: " + user);
 			}

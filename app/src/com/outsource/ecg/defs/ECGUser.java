@@ -34,15 +34,16 @@ public class ECGUser {
 	private String mEnrollDate;
 	private String mDataPath;
 	
+	// used when create user from a sql query
 	public ECGUser(int id, String name, String gender, String birthday, double HBR,
-			String enrollDate, String dataPath) {
+			String enrollDate) {
 		mID = id;
 		mName = name;
 		mGender = gender;
 		mBirth = birthday;
 		mHBR = HBR;
 		mEnrollDate = enrollDate;
-		mDataPath = dataPath;
+		mDataPath = mName.trim() + "_" + mID;
 	}
 
 	public ECGUser(int id, String name, String gender, String birthday, double HBR) {
