@@ -30,7 +30,7 @@
     <string name="save_label">Save</string>
     <string name="load_label">Load</string>
     <string name="select">Select</string>
-    <string name="delete">Delect</string>
+    <string name="delete">Delete</string>
     <string name="send">Send</string>
     <!-- ECG user prompts -->
     <string name="external_storage_unmounted_prompt">Please ensure external storage(such as SDCard) is mounted! :)</string>

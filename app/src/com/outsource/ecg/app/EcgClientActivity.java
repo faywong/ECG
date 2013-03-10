@@ -5,8 +5,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.afree.data.xy.XYSeries;
+import org.afree.data.xy.XYSeriesCollection;
+
 import com.outsource.ecg.ui.ECGUserAdapter;
 import com.outsource.ecg.ui.JDBCXYChartView;
+import com.outsource.ecg.ui.XYPlotView;
 import com.outsource.ecg.defs.ECGUser;
 import com.outsource.ecg.defs.ECGUserManager;
 import com.outsource.ecg.defs.ECGUtils;
@@ -42,6 +45,7 @@ public class EcgClientActivity extends Activity {
 	private String mDBFilePath;
 	private Object listener;
 	private XYSeries mDefaultSeries;
+	private double mLastX = 0.0;
 	private BluetoothAdapter mBluetoothAdapter;
 	// Name of the connected device
 	private String mConnectedDeviceName = null;
@@ -70,9 +74,121 @@ public class EcgClientActivity extends Activity {
 	private JDBCXYChartView mPlotView;
 	boolean mStarted = false;
 
-	Button mStartStopBtn;
+	private Button mStartStopBtn;
+	private Button mSaveBtn;
+
+	private ArrayList<Double> mReceivedEcgDataSet = new ArrayList<Double>();
 	// Member object for the ECG services
 	private EcgService mEcgService = null;
+
+	private View.OnClickListener mSaveButtonOnclickListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			if (!ECGUserManager.getCurrentUser().isValid()) {
+				Toast.makeText(EcgClientActivity.this,
+						"Please select a valid ecg user!", Toast.LENGTH_SHORT)
+						.show();
+				return;
+			}
+
+			if (TEST_USER_RECORDS) {
+				mReceivedEcgDataSet.add(4.10);
+				mReceivedEcgDataSet.add(4.12);
+				mReceivedEcgDataSet.add(4.16);
+				mReceivedEcgDataSet.add(4.19);
+				mReceivedEcgDataSet.add(4.20);
+				mReceivedEcgDataSet.add(4.22);
+				mReceivedEcgDataSet.add(4.29);
+			}
+
+			if (mReceivedEcgDataSet.isEmpty()) {
+				Toast.makeText(EcgClientActivity.this,
+						"Don't have received any valid data, do nothing!", Toast.LENGTH_SHORT)
+						.show();
+				return;
+			}
+			
+			try {
+				Connection connection = ECGUtils.getConnection(ECGUserManager
+						.getCurrentUserDataPath());
+				ECGUserManager.createUserHistroyRecord(connection,
+						ECGUtils.createRecordTableFromDate(),
+						mReceivedEcgDataSet, 1);
+				/*
+				 * DEBUG for (String recordID : ECGUserManager
+				 * .getUserHistroyRecords(connection,
+				 * ECGUserManager.getCurrentUser())) { Log.d(TAG, "Record: " +
+				 * recordID); }
+				 */
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// after storing to database, clear the received dataset
+			mReceivedEcgDataSet.clear();
+
+			Toast.makeText(EcgClientActivity.this,
+					"A new user record was created!", Toast.LENGTH_SHORT)
+					.show();
+			EcgClientActivity.this.finish();
+		}
+	};
+
+	private View.OnClickListener mStartStopButtonOncliClickListener = new View.OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			// first need select a valid ECG User
+
+			if (!ECGUserManager.getCurrentUser().isValid()) {
+				Toast.makeText(EcgClientActivity.this,
+						"Please select a valid ecg user!", Toast.LENGTH_SHORT)
+						.show();
+				return;
+			}
+
+			// second check whether target device is connected
+			if (EcgService.STATE_CONNECTED != EcgClientActivity.this.mEcgService
+					.getState()) {
+				Toast.makeText(EcgClientActivity.this,
+						"Target device is not connected!", Toast.LENGTH_SHORT)
+						.show();
+				return;
+			}
+
+			setContentView(R.layout.ecg_client_main);
+			XYPlotView plotView = (XYPlotView) findViewById(R.id.ecg_chart);
+			mSaveBtn = (Button) findViewById(R.id.save_btn);
+			mSaveBtn.setOnClickListener(mSaveButtonOnclickListener);
+
+			mStartStopBtn = (Button) findViewById(R.id.start_stop_btn);
+			mStartStopBtn
+					.setOnClickListener(mStartStopButtonOncliClickListener);
+
+			XYSeriesCollection series = plotView.getDataset();
+			mDefaultSeries = (XYSeries) series.getSeries().get(
+					XYPlotView.DEFAULT_SERIES_INDEX);
+
+			/*
+			 * for (int i = 1; i <= 100; i++) { mDefaultSeries.add(i * 1.0,
+			 * Math.random() * 7000 + 11000); }
+			 */
+
+			synchronized (EcgClientActivity.this) {
+				mStarted = !mStarted;
+				if (mStarted) {
+					mStartStopBtn.setText(R.string.stop_label);
+					// do the real start stuff
+				} else {
+					mStartStopBtn.setText(R.string.start_label);
+					// do the real stop stuff
+				}
+			}
+		}
+	};
 
 	// The Handler that gets information back from the EcgService
 	private final Handler mHandler = new Handler() {
@@ -107,6 +223,20 @@ public class EcgClientActivity extends Activity {
 				String readMessage = new String(readBuf, 0, msg.arg1);
 				// mConversationArrayAdapter.add(mConnectedDeviceName+":  " +
 				// readMessage);
+				double y = Double.parseDouble(readMessage);
+				Toast.makeText(EcgClientActivity.this,
+						"Received a msg with a double type data:" + y,
+						Toast.LENGTH_LONG);
+				mDefaultSeries.add(mLastX, y);
+				mLastX += 1.0;
+				if (mStarted) {
+					mReceivedEcgDataSet.add(y);
+					Toast.makeText(EcgClientActivity.this,
+							"Have added the data " + y
+									+ " to mReceivedEcgDataSet",
+							Toast.LENGTH_LONG);
+				}
+
 				break;
 			case MESSAGE_DEVICE_NAME:
 				// save the connected device's name
@@ -143,7 +273,7 @@ public class EcgClientActivity extends Activity {
 					e.printStackTrace();
 					Toast.makeText(context,
 							"ECGUserManager.Instance() failed!",
-							Toast.LENGTH_LONG).show();
+							Toast.LENGTH_SHORT).show();
 					finish();
 				}
 			} else if (Intent.ACTION_MEDIA_REMOVED.equals(action)
@@ -151,7 +281,7 @@ public class EcgClientActivity extends Activity {
 					|| Intent.ACTION_MEDIA_BAD_REMOVAL.equals(action)) {
 				// fail to mounted, do nothing
 				Toast.makeText(context, "External storage mount failed!",
-						Toast.LENGTH_LONG).show();
+						Toast.LENGTH_SHORT).show();
 			}
 
 		}
@@ -168,15 +298,6 @@ public class EcgClientActivity extends Activity {
 		mIDText = (TextView) findViewById(R.id.patient_id);
 		mHBRText = (TextView) findViewById(R.id.patient_hbr);
 		mConnectionText = (TextView) findViewById(R.id.connection_status);
-		/*
-		 * setContentView(R.layout.ecg_client_main); XYPlotView plotView =
-		 * (XYPlotView) findViewById(R.id.ecg_chart); XYSeriesCollection series
-		 * = plotView.getDataset(); mDefaultSeries = (XYSeries)
-		 * series.getSeries().get( XYPlotView.DEFAULT_SERIES_INDEX);
-		 * 
-		 * for (int i = 1; i <= 100; i++) { mDefaultSeries.add(i * 1.0,
-		 * Math.random() * 7000 + 11000); }
-		 */
 
 		// Get local Bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -184,7 +305,7 @@ public class EcgClientActivity extends Activity {
 		// If the adapter is null, then Bluetooth is not supported
 		if (mBluetoothAdapter == null) {
 			Toast.makeText(this, "Bluetooth is not available",
-					Toast.LENGTH_LONG).show();
+					Toast.LENGTH_SHORT).show();
 			finish();
 			return;
 		}
@@ -199,41 +320,11 @@ public class EcgClientActivity extends Activity {
 		intentFilter.addAction(Intent.ACTION_MEDIA_BAD_REMOVAL);
 		intentFilter.addDataScheme("file");
 		registerReceiver(mSdcardListener, intentFilter);
+		mSaveBtn = (Button) findViewById(R.id.save_btn);
+		mSaveBtn.setOnClickListener(mSaveButtonOnclickListener);
+
 		mStartStopBtn = (Button) findViewById(R.id.start_stop_btn);
-		mStartStopBtn.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				// first need select a valid ECG User
-				if (!ECGUserManager.getCurrentUser().isValid()) {
-					Toast.makeText(EcgClientActivity.this,
-							"Please select a valid ecg user!",
-							Toast.LENGTH_LONG).show();
-					return;
-				}
-
-				// second need select a valid ECG User
-				if (EcgService.STATE_CONNECTED != EcgClientActivity.this.mEcgService
-						.getState()) {
-					Toast.makeText(EcgClientActivity.this,
-							"Target device is not connected!",
-							Toast.LENGTH_LONG).show();
-					return;
-				}
-
-				synchronized (EcgClientActivity.this) {
-					mStarted = !mStarted;
-					if (mStarted) {
-						mStartStopBtn.setText(R.string.stop_label);
-						// do the real start stuff
-					} else {
-						mStartStopBtn.setText(R.string.start_label);
-						// do the real stop stuff
-					}
-				}
-			}
-		});
+		mStartStopBtn.setOnClickListener(mStartStopButtonOncliClickListener);
 
 		Button loadBtn = (Button) findViewById(R.id.load_btn);
 		loadBtn.setOnClickListener(new View.OnClickListener() {
@@ -244,7 +335,7 @@ public class EcgClientActivity extends Activity {
 				if (!ECGUserManager.getCurrentUser().isValid()) {
 					Toast.makeText(EcgClientActivity.this,
 							"Please select a valid ecg user!",
-							Toast.LENGTH_LONG).show();
+							Toast.LENGTH_SHORT).show();
 					return;
 				} else {
 					startActivityForResult(new Intent(EcgClientActivity.this,
@@ -278,6 +369,7 @@ public class EcgClientActivity extends Activity {
 
 	private void updateConnectionInfo() {
 		// TODO Auto-generated method stub
+		setUpEcgService();
 		switch (mEcgService.getState()) {
 		case EcgService.STATE_CONNECTED:
 			mConnectionText.setText(R.string.connected);
@@ -342,7 +434,7 @@ public class EcgClientActivity extends Activity {
 			Toast.makeText(
 					this,
 					"Current user is invalid, Please press to set user information!",
-					Toast.LENGTH_LONG).show();
+					Toast.LENGTH_SHORT).show();
 		}
 
 	}
@@ -394,7 +486,7 @@ public class EcgClientActivity extends Activity {
 				Environment.MEDIA_MOUNTED)) {
 			Toast.makeText(this,
 					getString(R.string.external_storage_unmounted_prompt),
-					Toast.LENGTH_LONG).show();
+					Toast.LENGTH_SHORT).show();
 			finish();
 		} else {
 			// populate user infomation from database
@@ -404,7 +496,7 @@ public class EcgClientActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				Toast.makeText(this, "ECGUserManager.Instance() failed!",
-						Toast.LENGTH_LONG).show();
+						Toast.LENGTH_SHORT).show();
 				finish();
 			}
 		}
@@ -495,41 +587,7 @@ public class EcgClientActivity extends Activity {
 				updateCurrentUserInfo();
 				Toast.makeText(this,
 						"UserManage activity returned user:" + user,
-						Toast.LENGTH_LONG).show();
-
-				if (TEST_USER_RECORDS) {
-					Toast.makeText(this, "TEST_USER_RECORDS START:",
-							Toast.LENGTH_LONG).show();
-
-					ArrayList<Double> series = new ArrayList<Double>();
-					series.add(4.10);
-					series.add(4.12);
-					series.add(4.16);
-					series.add(4.19);
-					series.add(4.20);
-					series.add(4.22);
-					series.add(4.29);
-
-					try {
-						Connection connection = ECGUtils
-								.getConnection(ECGUserManager
-										.getCurrentUserDataPath());
-						ECGUserManager.createUserHistroyRecord(connection,
-								ECGUtils.createRecordTableFromDate(), series,
-								0.1);
-						for (String recordID : ECGUserManager
-								.getUserHistroyRecords(connection,
-										ECGUserManager.getCurrentUser())) {
-							Log.d(TAG, "Record: " + recordID);
-						}
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-					Toast.makeText(this, "TEST_USER_RECORDS END:",
-							Toast.LENGTH_LONG).show();
-				}
+						Toast.LENGTH_SHORT).show();
 			}
 			break;
 

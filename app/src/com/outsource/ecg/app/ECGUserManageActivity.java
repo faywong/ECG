@@ -108,12 +108,12 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
             if (resultCode == RESULT_OK) {
                 // A contact was picked.  Here we will just display it
                 // to the user.
-                Toast.makeText(this, "A new user created success!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "A new user created success!", Toast.LENGTH_SHORT).show();
                 // update the user info
                 setGroupData();
                 mECGUserAdapter.notifyDataSetChanged();
             } else {
-                Toast.makeText(this, "A new user created failed!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "A new user created failed!", Toast.LENGTH_SHORT).show();
             }
         }
 

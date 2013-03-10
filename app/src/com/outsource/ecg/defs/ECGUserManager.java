@@ -106,14 +106,37 @@ public class ECGUserManager {
 		Log.d(TAG, "create table ECG_USER sql:" + sql + " result:" + create);
 	}
 	
+	public static void delUserHistoryRecords(Connection con, String table) {
+		if (null == con || null == table) {
+			return;
+		}
+		String sql = String.format("DROP TABLE IF EXISTS %s", table);
+		boolean dropRes = false;
+		try {
+			dropRes = con.createStatement().execute(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Log.d(TAG, "The result of dropping table:" + table + " is " + dropRes);
+	}
+	
 	/**
-	 * Initialize system global per-user ecg history records database.
+	 * create system global per-user ecg history records table
 	 * 
+	 * Table name format: "_ + {current_system_time}"
 	 * @param con
 	 */
 	public static void createUserHistroyRecord(Connection con, String table, Collection<Double> series, double avgXoffset) {
+		if (null == con || null == table) {
+			return;
+		}
 		String sql = String.format("CREATE TABLE if not exists %s %s", table, ECGUser.getHistoyRecordTableStructure(false));
 		Log.d(TAG, "sql to create histroy table:" + sql);
+		if (avgXoffset < 0.0) {
+			avgXoffset = 1;
+		}
 		boolean createRes = false;
 		try {
 			createRes = con.createStatement().execute(sql);
@@ -140,7 +163,7 @@ public class ECGUserManager {
 	}
 	
 	/**
-	 * Initialize system global per-user ecg history records database.
+	 * Retrieve the history ECG records of user
 	 * 
 	 * @param con
 	 */

@@ -22,19 +22,21 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ECGUserHistroyRecordActivity extends ListActivity {
 	private ECGRecordListAdapter mListAdapter;
 
 	public static final String EXTRA_TARGET_RECORD_ID = "record_id";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setListAdapter(mListAdapter = new ECGRecordListAdapter(getHistoryRecordIDs(), this));
+		setListAdapter(mListAdapter = new ECGRecordListAdapter(
+				getHistoryRecordIDs(), this));
 	}
 
-	
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
@@ -51,27 +53,31 @@ public class ECGUserHistroyRecordActivity extends ListActivity {
 	ArrayList<String> getHistoryRecordIDs() {
 		ArrayList<String> recordIDs = null;
 		try {
-			Connection connection = ECGUtils.getConnection(ECGUserManager.getCurrentUserDataPath());
-	        recordIDs = ECGUserManager.getUserHistroyRecords(connection, ECGUserManager.getCurrentUser());
+			Connection connection = ECGUtils.getConnection(ECGUserManager
+					.getCurrentUserDataPath());
+			recordIDs = ECGUserManager.getUserHistroyRecords(connection,
+					ECGUserManager.getCurrentUser());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return recordIDs;
 	}
-	
+
 	private static class ECGRecordListAdapter implements ListAdapter {
 		ArrayList<String> mRecords;
 		Activity mContext;
-		public ECGRecordListAdapter(ArrayList<String> recordIDs, Activity context) {
+
+		public ECGRecordListAdapter(ArrayList<String> recordIDs,
+				Activity context) {
 			mRecords = recordIDs;
 			mContext = context;
 		}
-		
+
 		public void setRecordIDs(ArrayList<String> recordIDs) {
 			mRecords = recordIDs;
 		}
-		
+
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
@@ -99,14 +105,15 @@ public class ECGUserHistroyRecordActivity extends ListActivity {
 		@Override
 		public View getView(int arg0, View arg1, ViewGroup arg2) {
 			// TODO Auto-generated method stub
-			LayoutInflater flater = LayoutInflater.from(mContext); 
+			LayoutInflater flater = LayoutInflater.from(mContext);
 			View row = flater.inflate(R.layout.select_recordrow, null);
 			TextView recordIDView = (TextView) row.findViewById(R.id.record);
 			final String currentRecordID = mRecords.get(arg0);
 			recordIDView.setText(currentRecordID);
-			Button selectRecordBtn = (Button) row.findViewById(R.id.select_record);
+			Button selectRecordBtn = (Button) row
+					.findViewById(R.id.select_record);
 			selectRecordBtn.setOnClickListener(new View.OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
@@ -116,14 +123,29 @@ public class ECGUserHistroyRecordActivity extends ListActivity {
 					mContext.finish();
 				}
 			});
-			
+
 			Button delRecordBtn = (Button) row.findViewById(R.id.delete_record);
 			delRecordBtn.setOnClickListener(new View.OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					
+					try {
+						Connection connection = ECGUtils
+								.getConnection(ECGUserManager
+										.getCurrentUserDataPath());
+						ECGUserManager.delUserHistoryRecords(connection,
+								currentRecordID);
+						mContext.finish();
+						Toast.makeText(
+								mContext,
+								"The history record:" + currentRecordID
+										+ " is deleted!", Toast.LENGTH_SHORT)
+								.show();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			});
 			return row;
@@ -150,13 +172,13 @@ public class ECGUserHistroyRecordActivity extends ListActivity {
 		@Override
 		public void registerDataSetObserver(DataSetObserver arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void unregisterDataSetObserver(DataSetObserver arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -170,6 +192,6 @@ public class ECGUserHistroyRecordActivity extends ListActivity {
 			// TODO Auto-generated method stub
 			return true;
 		}
-		
+
 	}
 }

@@ -5,7 +5,6 @@
     android:background="@android:color/black"
     android:clickable="true"
     android:orientation="vertical"
-    android:paddingLeft="40dp"
     tools:context=".MainActivity" >
 
     <LinearLayout

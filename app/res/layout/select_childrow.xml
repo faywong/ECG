@@ -5,7 +5,6 @@
     android:background="@android:color/black"
     android:gravity="center"
     android:orientation="horizontal"
-    android:paddingLeft="40dp"
     tools:context=".app.ECGUserManageActivity" >
 
     <Button
