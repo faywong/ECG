@@ -46,7 +46,6 @@
     <string name="birth_label">Birth:</string>
     <string name="hbr_label">HBR:</string>
     <string name="commit_new_user_info">Save</string>
-    <string name="commit_new_user_info">Save</string>
 
     <!-- Strings for Titles -->
     <string name="user_manager_title">ECGUser Management</string>
