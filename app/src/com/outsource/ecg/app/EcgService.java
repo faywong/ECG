@@ -47,15 +47,20 @@ public class EcgService {
 	private static final String NAME_INSECURE = "EcgClientInsecure";
 
 	// // Unique UUID for this application
-	// private static final UUID MY_UUID_SECURE =
-	// UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
-	// private static final UUID MY_UUID_INSECURE =
-	// UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
-
 	private static final UUID MY_UUID_SECURE = UUID
-			.fromString("00001101-0000-1000-8000-00805F9B34FB");
+			.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
 	private static final UUID MY_UUID_INSECURE = UUID
-			.fromString("00001101-0000-1000-8000-00805F9B34FB");
+			.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+
+	// private static final UUID MY_UUID_SECURE = UUID
+	// .fromString("00001105-0000-1000-8000-00805f9b34fb");//ObexObjectPush uuid
+	// private static final UUID MY_UUID_INSECURE = UUID
+	// .fromString("00001105-0000-1000-8000-00805f9b34fb");//ObexObjectPush uuid
+
+	// private static final UUID MY_UUID_SECURE = UUID
+	// .fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+	// private static final UUID MY_UUID_INSECURE = UUID
+	// .fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
 
 	// Member fields
 	private final BluetoothAdapter mAdapter;
@@ -148,6 +153,7 @@ public class EcgService {
 			mSecureAcceptThread = new AcceptThread(true);
 			mSecureAcceptThread.start();
 		}
+		
 		if (mInsecureAcceptThread == null) {
 			mInsecureAcceptThread = new AcceptThread(false);
 			mInsecureAcceptThread.start();
@@ -197,7 +203,7 @@ public class EcgService {
 	public synchronized void connected(BluetoothSocket socket,
 			BluetoothDevice device, final String socketType) {
 		if (DEBUG)
-			Log.d(TAG, "connected, Socket Type:" + socketType);
+			Log.d(TAG, "faywong connected, Socket Type:" + socketType);
 
 		// Cancel the thread that completed the connection
 		if (mConnectThread != null) {
@@ -217,10 +223,12 @@ public class EcgService {
 			mSecureAcceptThread.cancel();
 			mSecureAcceptThread = null;
 		}
+		/*
 		if (mInsecureAcceptThread != null) {
 			mInsecureAcceptThread.cancel();
 			mInsecureAcceptThread = null;
 		}
+		*/
 
 		// Start the thread to manage the connection and perform transmissions
 		mConnectedThread = new ConnectedThread(socket, socketType);
@@ -330,7 +338,6 @@ public class EcgService {
 			BluetoothServerSocket tmp = null;
 			mSocketType = secure ? "Secure" : "Insecure";
 
-			// Create a new listening server socket
 			try {
 				if (secure) {
 					tmp = mAdapter.listenUsingRfcommWithServiceRecord(
@@ -359,6 +366,7 @@ public class EcgService {
 					// This is a blocking call and will only return on a
 					// successful connection or an exception
 					socket = mmServerSocket.accept();
+					Log.d(TAG, "faywong server socket accepted a connection");
 				} catch (IOException e) {
 					Log.e(TAG, "Socket Type: " + mSocketType
 							+ "accept() failed", e);
@@ -442,7 +450,9 @@ public class EcgService {
 			setName("ConnectThread" + mSocketType);
 
 			// Always cancel discovery because it will slow down a connection
-			mAdapter.cancelDiscovery();
+			if (mAdapter.isDiscovering()) {
+				mAdapter.cancelDiscovery();
+			}
 
 			// Make a connection to the BluetoothSocket
 			try {
@@ -518,7 +528,8 @@ public class EcgService {
 				try {
 					// Read from the InputStream
 					bytes = mmInStream.read(buffer);
-
+					
+					Log.d(TAG, "faywong, read a msg of length " + bytes + " bytes!");
 					// Send the obtained bytes to the UI Activity
 					mHandler.obtainMessage(EcgClientActivity.MESSAGE_READ,
 							bytes, -1, buffer).sendToTarget();

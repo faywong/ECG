@@ -221,12 +221,25 @@ public class EcgClientActivity extends Activity {
 				byte[] readBuf = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
 				String readMessage = new String(readBuf, 0, msg.arg1);
+				Toast.makeText(EcgClientActivity.this,
+						"faywong got a message " + readMessage,
+						Toast.LENGTH_LONG).show();
+	
+				Log.d(TAG, "faywong got a message " + readMessage + " mDefaultSeries" + mDefaultSeries);
 				// mConversationArrayAdapter.add(mConnectedDeviceName+":  " +
 				// readMessage);
 				double y = Double.parseDouble(readMessage);
+				Log.d(TAG, "faywong got a double data " + y  + " mDefaultSeries:" + mDefaultSeries);
+
 				Toast.makeText(EcgClientActivity.this,
 						"Received a msg with a double type data:" + y,
-						Toast.LENGTH_LONG);
+						Toast.LENGTH_LONG).show();
+				if (null == mDefaultSeries) {
+					Toast.makeText(EcgClientActivity.this,
+							"Please press start to prepare for receiving income data!",
+							Toast.LENGTH_LONG);
+					return;
+				}
 				mDefaultSeries.add(mLastX, y);
 				mLastX += 1.0;
 				if (mStarted) {
