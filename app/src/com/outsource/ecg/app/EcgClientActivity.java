@@ -38,12 +38,13 @@ import com.outsource.ecg.R;
 
 public class EcgClientActivity extends Activity {
 	private static final String TAG = "EcgClient";
-	private static final boolean DEBUG = true;
+	static final boolean DEBUG = false;
+	public static final boolean DEBUG_UI_TOAST = false;
+
 	private static final boolean TEST_USER_RECORDS = false;
 
 	private static String DB_FILE_NAME = "ecg.sqlite";
 	private String mDBFilePath;
-	private Object listener;
 	private XYSeries mDefaultSeries;
 	private double mLastX = 0.0;
 	private BluetoothAdapter mBluetoothAdapter;
@@ -87,7 +88,7 @@ public class EcgClientActivity extends Activity {
 			// TODO Auto-generated method stub
 			if (!ECGUserManager.getCurrentUser().isValid()) {
 				Toast.makeText(EcgClientActivity.this,
-						"Please select a valid ecg user!", Toast.LENGTH_SHORT)
+						getString(R.string.select_valid_user), Toast.LENGTH_SHORT)
 						.show();
 				return;
 			}
@@ -104,11 +105,11 @@ public class EcgClientActivity extends Activity {
 
 			if (mReceivedEcgDataSet.isEmpty()) {
 				Toast.makeText(EcgClientActivity.this,
-						"Don't have received any valid data, do nothing!", Toast.LENGTH_SHORT)
-						.show();
+						getString(R.string.not_recv_any_data),
+						Toast.LENGTH_SHORT).show();
 				return;
 			}
-			
+
 			try {
 				Connection connection = ECGUtils.getConnection(ECGUserManager
 						.getCurrentUserDataPath());
@@ -128,11 +129,13 @@ public class EcgClientActivity extends Activity {
 
 			// after storing to database, clear the received dataset
 			mReceivedEcgDataSet.clear();
-
+			if (EcgClientActivity.DEBUG_UI_TOAST)
 			Toast.makeText(EcgClientActivity.this,
-					"A new user record was created!", Toast.LENGTH_SHORT)
+					getString(R.string.new_user_created_debug), Toast.LENGTH_SHORT)
 					.show();
-			EcgClientActivity.this.finish();
+			Intent intent = new Intent(EcgClientActivity.this,
+					ECGUserHistroyRecordActivity.class);
+			startActivityForResult(intent, REQUEST_SELECT_HISTROY_ECG_RECORD);
 		}
 	};
 
@@ -145,7 +148,7 @@ public class EcgClientActivity extends Activity {
 
 			if (!ECGUserManager.getCurrentUser().isValid()) {
 				Toast.makeText(EcgClientActivity.this,
-						"Please select a valid ecg user!", Toast.LENGTH_SHORT)
+						getString(R.string.select_valid_user), Toast.LENGTH_SHORT)
 						.show();
 				return;
 			}
@@ -154,7 +157,7 @@ public class EcgClientActivity extends Activity {
 			if (EcgService.STATE_CONNECTED != EcgClientActivity.this.mEcgService
 					.getState()) {
 				Toast.makeText(EcgClientActivity.this,
-						"Target device is not connected!", Toast.LENGTH_SHORT)
+						getString(R.string.target_device_not_connected), Toast.LENGTH_SHORT)
 						.show();
 				return;
 			}
@@ -212,42 +215,58 @@ public class EcgClientActivity extends Activity {
 				}
 				break;
 			case MESSAGE_WRITE:
-				byte[] writeBuf = (byte[]) msg.obj;
+				// byte[] writeBuf = (byte[]) msg.obj;
 				// construct a string from the buffer
-				String writeMessage = new String(writeBuf);
+				// String writeMessage = new String(writeBuf);
 				// mConversationArrayAdapter.add("Me:  " + writeMessage);
 				break;
 			case MESSAGE_READ:
 				byte[] readBuf = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
 				String readMessage = new String(readBuf, 0, msg.arg1);
-				Toast.makeText(EcgClientActivity.this,
-						"faywong got a message " + readMessage,
-						Toast.LENGTH_LONG).show();
-	
-				Log.d(TAG, "faywong got a message " + readMessage + " mDefaultSeries" + mDefaultSeries);
+
+				if (DEBUG_UI_TOAST)
+					Toast.makeText(EcgClientActivity.this,
+							"got a message " + readMessage,
+							Toast.LENGTH_LONG).show();
+				if (DEBUG)
+					Log.d(TAG, "got a message " + readMessage
+							+ " mDefaultSeries" + mDefaultSeries);
 				// mConversationArrayAdapter.add(mConnectedDeviceName+":  " +
 				// readMessage);
-				double y = Double.parseDouble(readMessage);
-				Log.d(TAG, "faywong got a double data " + y  + " mDefaultSeries:" + mDefaultSeries);
-
-				Toast.makeText(EcgClientActivity.this,
-						"Received a msg with a double type data:" + y,
-						Toast.LENGTH_LONG).show();
-				if (null == mDefaultSeries) {
+				double y = 0.0;
+				try {
+					y = Double.parseDouble(readMessage);
+				} catch (NumberFormatException ex) {
+					Log.e(TAG, "Msg " + readMessage + " isn't a double type "
+							+ ex);
+					return;
+				}
+				Log.d(TAG, "got a double data " + y
+						+ " mDefaultSeries:" + mDefaultSeries);
+				if (DEBUG_UI_TOAST)
 					Toast.makeText(EcgClientActivity.this,
+							"Received a msg with a double type data:" + y,
+							Toast.LENGTH_LONG).show();
+
+				if (null == mDefaultSeries) {
+					Toast.makeText(
+							EcgClientActivity.this,
 							"Please press start to prepare for receiving income data!",
 							Toast.LENGTH_LONG);
 					return;
 				}
+
 				mDefaultSeries.add(mLastX, y);
-				mLastX += 1.0;
+				mLastX += 0.2;
 				if (mStarted) {
 					mReceivedEcgDataSet.add(y);
-					Toast.makeText(EcgClientActivity.this,
-							"Have added the data " + y
-									+ " to mReceivedEcgDataSet",
-							Toast.LENGTH_LONG);
+					if (DEBUG_UI_TOAST) {
+						Toast.makeText(EcgClientActivity.this,
+								"Have added the data " + y
+										+ " to mReceivedEcgDataSet",
+								Toast.LENGTH_LONG);
+					}
 				}
 
 				break;
@@ -432,21 +451,21 @@ public class EcgClientActivity extends Activity {
 						+ currentUser.isValid() + " name:"
 						+ currentUser.getName());
 		if (null != mNameText) {
-			mNameText.setText("Name:" + currentUser.getName());
+			mNameText.setText(getString(R.string.name_label) + "\n" + currentUser.getName());
 			mNameText.setOnClickListener(clickListener);
 		}
 		if (null != mIDText) {
-			mIDText.setText("ID:\n" + String.valueOf(currentUser.getID()));
+			mIDText.setText(getString(R.string.ID_label) + "\n" + String.valueOf(currentUser.getID()));
 			mIDText.setOnClickListener(clickListener);
 		}
 		if (null != mHBRText) {
-			mHBRText.setText("HBR:\n" + String.valueOf(currentUser.getHBR()));
+			mHBRText.setText(getString(R.string.hbr_label) + "\n" + String.valueOf(currentUser.getHBR()));
 			mHBRText.setOnClickListener(clickListener);
 		}
 		if (!currentUser.isValid()) {
 			Toast.makeText(
 					this,
-					"Current user is invalid, Please press to set user information!",
+					getString(R.string.select_valid_user),
 					Toast.LENGTH_SHORT).show();
 		}
 
@@ -598,6 +617,7 @@ public class EcgClientActivity extends Activity {
 				ECGUser user = data
 						.getParcelableExtra(ECGUserAdapter.CURRENT_USER_EXTRA);
 				updateCurrentUserInfo();
+				if (EcgClientActivity.DEBUG_UI_TOAST)
 				Toast.makeText(this,
 						"UserManage activity returned user:" + user,
 						Toast.LENGTH_SHORT).show();

@@ -76,53 +76,71 @@ public final class R {
         public static final int user_manager_menu=0x7f050001;
     }
     public static final class string {
+        public static final int ID_label=0x7f04002f;
         /**  Strings for Adding new ECGUser 
+ Strings for Adding new ECGUser 
          */
         public static final int add_user=0x7f04001a;
+        public static final int age_label=0x7f040032;
         public static final int app_name=0x7f040000;
-        public static final int birth_label=0x7f04001e;
+        public static final int birth_label=0x7f04001c;
         public static final int bt_not_enabled_leaving=0x7f040002;
         public static final int button_scan=0x7f04000c;
-        public static final int commit_new_user_info=0x7f040020;
+        public static final int commit_new_user_info=0x7f04001d;
         /**  Connection Status 
+ Connection Status 
          */
-        public static final int connected=0x7f040026;
-        public static final int connecting=0x7f040027;
+        public static final int connected=0x7f040023;
+        public static final int connecting=0x7f040024;
+        public static final int create_new_user_failed=0x7f040028;
         public static final int delete=0x7f040016;
         public static final int discoverable=0x7f040005;
-        public static final int ecg_client_title=0x7f040025;
-        public static final int ecg_server_title=0x7f040024;
+        public static final int ecg_client_title=0x7f040022;
+        public static final int ecg_data_path_label=0x7f040033;
+        public static final int ecg_server_title=0x7f040021;
+        public static final int enroll_date_label=0x7f040031;
         /**  ECG user prompts 
+ ECG user prompts 
          */
         public static final int external_storage_unmounted_prompt=0x7f040018;
-        public static final int female_label=0x7f04001d;
-        public static final int hbr_label=0x7f04001f;
+        public static final int female_label=0x7f04002a;
+        public static final int gender_label=0x7f040030;
+        public static final int hbr_label=0x7f040034;
         public static final int insecure_connect=0x7f040004;
-        public static final int listen=0x7f040029;
+        public static final int listen=0x7f040026;
         public static final int load_label=0x7f040014;
-        public static final int male_label=0x7f04001c;
+        public static final int male_label=0x7f040029;
+        public static final int name_item_empty=0x7f040027;
         public static final int name_label=0x7f04001b;
-        public static final int new_user_title=0x7f040022;
-        public static final int none=0x7f040028;
+        public static final int new_user_created_debug=0x7f04002d;
+        public static final int new_user_title=0x7f04001f;
+        public static final int none=0x7f040025;
         public static final int none_found=0x7f040009;
         public static final int none_paired=0x7f040008;
         public static final int not_connected=0x7f040010;
+        public static final int not_recv_any_data=0x7f04002c;
         public static final int save_label=0x7f040013;
         /**  DeviceListActivity 
+ DeviceListActivity 
          */
         public static final int scanning=0x7f040006;
         /**  Options Menu 
+ Options Menu 
          */
         public static final int secure_connect=0x7f040003;
         public static final int select=0x7f040015;
         public static final int select_device=0x7f040007;
+        public static final int select_valid_user=0x7f04002b;
         public static final int send=0x7f040017;
         /**  ECG control buttons 
+ ECG control buttons 
          */
         public static final int start_label=0x7f040011;
         public static final int stop_label=0x7f040012;
+        public static final int target_device_not_connected=0x7f04002e;
         public static final int test=0x7f040001;
         /**  Strings for Test 
+ Strings for Test 
          */
         public static final int test_connection_status=0x7f040019;
         public static final int title_connected_to=0x7f04000e;
@@ -131,8 +149,9 @@ public final class R {
         public static final int title_other_devices=0x7f04000b;
         public static final int title_paired_devices=0x7f04000a;
         /**  Strings for Titles 
+ Strings for Titles 
          */
-        public static final int user_manager_title=0x7f040021;
-        public static final int view_histroy_records_title=0x7f040023;
+        public static final int user_manager_title=0x7f04001e;
+        public static final int view_histroy_records_title=0x7f040020;
     }
 }

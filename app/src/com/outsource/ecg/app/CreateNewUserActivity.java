@@ -34,7 +34,7 @@ public class CreateNewUserActivity extends Activity {
 						+ String.valueOf(mDatePicker.getMonth() + 1);
 				String name = mNameInput.getText().toString();
 				if (name.isEmpty()) {
-					Toast.makeText(CreateNewUserActivity.this, "Name is empty, please retry!", Toast.LENGTH_SHORT).show();
+					Toast.makeText(CreateNewUserActivity.this, getString(R.string.name_item_empty), Toast.LENGTH_SHORT).show();
 					return;
 				}
 				try {
@@ -43,7 +43,7 @@ public class CreateNewUserActivity extends Activity {
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					Toast.makeText(CreateNewUserActivity.this, "Create new user failed!", Toast.LENGTH_LONG).show();
+					Toast.makeText(CreateNewUserActivity.this, getString(R.string.create_new_user_failed), Toast.LENGTH_LONG).show();
 					setResult(Activity.RESULT_CANCELED); 
 					finish();
 				}
@@ -60,10 +60,10 @@ public class CreateNewUserActivity extends Activity {
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				// TODO Auto-generated method stub
 				if (checkedId == R.id.male_radio) {
-					CreateNewUserActivity.this.mGender = "male";
+					CreateNewUserActivity.this.mGender = getString(R.string.male_label);
 				}
 				if (checkedId == R.id.female_radio) {
-					CreateNewUserActivity.this.mGender = "female";
+					CreateNewUserActivity.this.mGender = getString(R.string.female_label);
 				}
 			}
 

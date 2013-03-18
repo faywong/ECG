@@ -19,7 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +42,7 @@ public class ECGUserHistroyRecordActivity extends ListActivity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		mListAdapter.setRecordIDs(getHistoryRecordIDs());
+		mListAdapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -64,7 +65,7 @@ public class ECGUserHistroyRecordActivity extends ListActivity {
 		return recordIDs;
 	}
 
-	private static class ECGRecordListAdapter implements ListAdapter {
+	private static class ECGRecordListAdapter extends BaseAdapter {
 		ArrayList<String> mRecords;
 		Activity mContext;
 
@@ -137,6 +138,7 @@ public class ECGUserHistroyRecordActivity extends ListActivity {
 						ECGUserManager.delUserHistoryRecords(connection,
 								currentRecordID);
 						mContext.finish();
+						if (EcgClientActivity.DEBUG_UI_TOAST)
 						Toast.makeText(
 								mContext,
 								"The history record:" + currentRecordID

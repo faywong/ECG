@@ -1,20 +1,17 @@
-# view AndroidManifest.xml #generated:48
+# view AndroidManifest.xml #generated:38
 -keep class com.outsource.ecg.app.CreateNewUserActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:34
+# view AndroidManifest.xml #generated:24
 -keep class com.outsource.ecg.app.DeviceListActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:58
+# view AndroidManifest.xml #generated:48
 -keep class com.outsource.ecg.app.ECGUserHistroyRecordActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:38
+# view AndroidManifest.xml #generated:28
 -keep class com.outsource.ecg.app.ECGUserManageActivity { <init>(...); }
 
 # view AndroidManifest.xml #generated:15
 -keep class com.outsource.ecg.app.EcgClientActivity { <init>(...); }
-
-# view AndroidManifest.xml #generated:24
--keep class com.outsource.ecg.app.EcgServerActivity { <init>(...); }
 
 # view res/layout/ecg_client_db.xml #generated:47
 -keep class com.outsource.ecg.ui.JDBCXYChartView { <init>(...); }

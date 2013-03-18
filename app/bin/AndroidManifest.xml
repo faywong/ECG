@@ -22,16 +22,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.outsource.ecg.app.EcgServerActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/ecg_server_title" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name="com.outsource.ecg.app.DeviceListActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/select_device" />

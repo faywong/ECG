@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">掌上心电图</string>
+    <string name="test">EcgMobile</string>
+    
+    <string name="bt_not_enabled_leaving">蓝也没有打开，退出!</string>
+
+    <!-- Options Menu -->
+    <string name="secure_connect">安全模式连接远端设备</string>
+    <string name="insecure_connect">非安全模式连接远端设备</string>
+    <string name="discoverable">设置为可被发现</string>
+
+    <!-- DeviceListActivity -->
+    <string name="scanning">扫描设备...</string>
+    <string name="select_device">选择目标设备来连接</string>
+    <string name="none_paired">无已配对设备</string>
+    <string name="none_found">未找到任何设备</string>
+    <string name="title_paired_devices">已配对设备</string>
+    <string name="title_other_devices">其他可用设备</string>
+    <string name="button_scan">扫描设备</string>
+    <string name="title_connecting">连接中...</string>
+    <string name="title_connected_to">已连接 </string>
+    <string name="title_not_connected">未连接</string>
+    <string name="not_connected">您未连接任何一台远端设备</string>
+    
+    <!-- ECG control buttons -->
+    <string name="start_label">开始</string>
+    <string name="stop_label">停止</string>
+    <string name="save_label">保存</string>
+    <string name="load_label">载入</string>
+    <string name="select">选中</string>
+    <string name="delete">删除</string>
+    <string name="send">发送</string>
+    <!-- ECG user prompts -->
+    <string name="external_storage_unmounted_prompt">请确保外部存储设备已装载</string>
+
+    <!-- Strings for Test -->
+    <string name="test_connection_status">状态：未连接</string>
+    <!-- Strings for Adding new ECGUser -->
+
+    <string name="add_user">创建新用户</string>
+    <string name="name_label">姓名:</string>
+    <string name="birth_label">出生日:</string>
+    <string name="commit_new_user_info">保存</string>
+
+    <!-- Strings for Titles -->
+    <string name="user_manager_title">心电图用户管理</string>
+    <string name="new_user_title">创建新用户</string>
+    <string name="view_histroy_records_title">历史心电数据</string>
+    <string name="ecg_server_title">掌上心电图服务端</string>
+    <string name="ecg_client_title">掌上心电图</string>
+    
+    <!-- Connection Status -->
+    <string name="connected">状态:\n已连接</string>
+    <string name="connecting">状态:\n未连接</string>
+    <string name="none">状态:\n未连接</string>
+    <string name="listen">状态:\n侦听</string>
+    
+    <string name="name_item_empty">姓名为空，请重新输入!</string>
+    <string name="create_new_user_failed">创建新用户失败!</string>
+    <string name="male_label">男</string>
+    <string name="female_label">女</string>
+    <string name="select_valid_user">请选择一个有效的用户!</string>
+    <string name="not_recv_any_data">未接收到任何数据!</string>
+     <string name="new_user_created_debug">新用户创建成功!</string>
+     <string name="target_device_not_connected">未连接任何目标设备!</string>
+               <string name="ID_label">编号:</string>
+    <string name="gender_label">性别:</string>
+    <string name="enroll_date_label">注册时间:</string>
+    <string name="age_label">年龄:</string>
+    <string name="ecg_data_path_label">ECG数据路径:</string>
+            <string name="hbr_label">心率:</string>
+    
+</resources>

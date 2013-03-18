@@ -57,12 +57,12 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 			for (ECGUser user : users) {
 				groupItem.add(user);
 				ArrayList<String> child = new ArrayList<String>();
-				child.add(user.getIDDesc());
-				child.add(user.getGenderDesc());
-				child.add(user.getBirthDesc());
-				child.add(user.getHBRDesc());
-				child.add(user.getECGDataPathDesc());
-				child.add(user.getEnrollDataDesc());
+				child.add(getString(R.string.ID_label) + user.getID());
+				child.add(getString(R.string.gender_label) + user.getGender());
+				child.add(getString(R.string.birth_label) + user.getBirth());
+				child.add(getString(R.string.hbr_label) + user.getHBR());
+				child.add(getString(R.string.ecg_data_path_label) + user.getECGDataPath());
+				child.add(getString(R.string.enroll_date_label) + user.getEnrollDate());
 				// the last one child is fake object for place "delete" & "select" button
 				child.add(String.valueOf(user.getID()));
 				childItem.add(child);
@@ -76,6 +76,7 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 	@Override
 	public boolean onChildClick(ExpandableListView parent, View v,
 			int groupPosition, int childPosition, long id) {
+		if (EcgClientActivity.DEBUG_UI_TOAST)
 		Toast.makeText(ECGUserManageActivity.this, "Clicked On Child",
 				Toast.LENGTH_SHORT).show();
 		return true;
@@ -108,6 +109,7 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
             if (resultCode == RESULT_OK) {
                 // A contact was picked.  Here we will just display it
                 // to the user.
+        		if (EcgClientActivity.DEBUG_UI_TOAST)
                 Toast.makeText(this, "A new user created success!", Toast.LENGTH_SHORT).show();
                 // update the user info
                 setGroupData();

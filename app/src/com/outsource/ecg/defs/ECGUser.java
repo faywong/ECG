@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.R.integer;
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.format.DateFormat;
@@ -103,8 +104,12 @@ public class ECGUser implements Parcelable {
 		return "Birth:" + mBirth;
 	}
 
-	public String getEnrollDataDesc() {
+	public String getEnrollDateDesc() {
 		return "Enroll Date:" + mEnrollDate;
+	}
+
+	public String getEnrollDate() {
+		return mEnrollDate;
 	}
 
 	public String getAgeDesc() {
