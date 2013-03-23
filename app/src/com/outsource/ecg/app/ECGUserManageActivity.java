@@ -20,7 +20,13 @@ import com.outsource.ecg.ui.ECGUserAdapter;
 import com.outsource.ecg.defs.ECGUserManager;
 import com.outsource.ecg.defs.ECGUser;
 
-public class ECGUserManageActivity extends ExpandableListActivity implements
+/**
+ * This class mainly displays detailed info of available users through extending ExpandableListActivity
+ * , also support select one user to be the current user or remove it, or launch CreateNewUserActivity to create a new User
+ * @author faywong
+ *
+ */
+public class EcgUserManageActivity extends ExpandableListActivity implements
 		OnChildClickListener {
 	private static final String TAG = "ECGUserManageActivity";
 	static final int CREATE_USER_REQUEST = 0;
@@ -76,8 +82,8 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
 	@Override
 	public boolean onChildClick(ExpandableListView parent, View v,
 			int groupPosition, int childPosition, long id) {
-		if (EcgClientActivity.DEBUG_UI_TOAST)
-		Toast.makeText(ECGUserManageActivity.this, "Clicked On Child",
+		if (RTEcgChartActivity.DEBUG_UI_TOAST)
+		Toast.makeText(EcgUserManageActivity.this, "Clicked On Child",
 				Toast.LENGTH_SHORT).show();
 		return true;
 	}
@@ -109,7 +115,7 @@ public class ECGUserManageActivity extends ExpandableListActivity implements
             if (resultCode == RESULT_OK) {
                 // A contact was picked.  Here we will just display it
                 // to the user.
-        		if (EcgClientActivity.DEBUG_UI_TOAST)
+        		if (RTEcgChartActivity.DEBUG_UI_TOAST)
                 Toast.makeText(this, "A new user created success!", Toast.LENGTH_SHORT).show();
                 // update the user info
                 setGroupData();

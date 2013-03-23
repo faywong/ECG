@@ -24,7 +24,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ECGUserHistroyRecordActivity extends ListActivity {
+/**
+ * This class is designed to display History record of a specified user(retrieved from a sqlite database)
+ * @author faywong
+ *
+ */
+public class EcgUserHistroyRecordActivity extends ListActivity {
 	private ECGRecordListAdapter mListAdapter;
 
 	public static final String EXTRA_TARGET_RECORD_ID = "record_id";
@@ -138,7 +143,7 @@ public class ECGUserHistroyRecordActivity extends ListActivity {
 						ECGUserManager.delUserHistoryRecords(connection,
 								currentRecordID);
 						mContext.finish();
-						if (EcgClientActivity.DEBUG_UI_TOAST)
+						if (RTEcgChartActivity.DEBUG_UI_TOAST)
 						Toast.makeText(
 								mContext,
 								"The history record:" + currentRecordID

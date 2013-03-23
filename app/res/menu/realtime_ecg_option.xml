@@ -14,8 +14,8 @@
      limitations under the License.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/about"
-          android:icon="@android:drawable/ic_menu_info_details"
-          android:title="@string/about_app"
+    <item android:id="@+id/discoverable"
+          android:icon="@android:drawable/ic_menu_mylocation"
+          android:title="@string/discoverable"
           />
 </menu>

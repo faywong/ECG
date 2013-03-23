@@ -1,21 +1,27 @@
-# view AndroidManifest.xml #generated:38
+# view AndroidManifest.xml #generated:46
 -keep class com.outsource.ecg.app.CreateNewUserActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:24
+# view AndroidManifest.xml #generated:32
 -keep class com.outsource.ecg.app.DeviceListActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:48
--keep class com.outsource.ecg.app.ECGUserHistroyRecordActivity { <init>(...); }
-
 # view AndroidManifest.xml #generated:28
--keep class com.outsource.ecg.app.ECGUserManageActivity { <init>(...); }
+-keep class com.outsource.ecg.app.EcgLoadHistoryActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:56
+-keep class com.outsource.ecg.app.EcgUserHistroyRecordActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:36
+-keep class com.outsource.ecg.app.EcgUserManageActivity { <init>(...); }
 
 # view AndroidManifest.xml #generated:15
--keep class com.outsource.ecg.app.EcgClientActivity { <init>(...); }
+-keep class com.outsource.ecg.app.MainActivity { <init>(...); }
 
-# view res/layout/ecg_client_db.xml #generated:47
+# view AndroidManifest.xml #generated:24
+-keep class com.outsource.ecg.app.RTEcgChartActivity { <init>(...); }
+
+# view res/layout/ecg_client_history_records.xml #generated:37
 -keep class com.outsource.ecg.ui.JDBCXYChartView { <init>(...); }
 
-# view res/layout/ecg_client_main.xml #generated:41
+# view res/layout/ecg_client_rt_ecg.xml #generated:50
 -keep class com.outsource.ecg.ui.XYPlotView { <init>(...); }
 

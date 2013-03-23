@@ -2,13 +2,16 @@
 <resources>
 
     <string name="app_name">EcgMobile</string>
-    <string name="test">EcgMobile</string>
+    <string name="about_app">About ECG Mobile</string>
+    <string name="app_info">ECG Mobile\nDeveloped by:wangfei584521@gmail.com\nCredit: Yanan Huang</string>
+    
     <string name="bt_not_enabled_leaving">Bluetooth is not enabled, exit!</string>
+    
 
     <!-- Options Menu -->
     <string name="secure_connect">Connect a device - Secure</string>
     <string name="insecure_connect">Connect a device - Insecure</string>
-    <string name="discoverable">Make discoverable</string>
+    <string name="discoverable">Make bluetooth discoverable</string>
 
     <!-- DeviceListActivity -->
     <string name="scanning">scanning for devices...</string>
@@ -48,26 +51,28 @@
     <string name="new_user_title">Create a new ECGUser</string>
     <string name="view_histroy_records_title">History ECG Records</string>
     <string name="ecg_server_title">ECG Mobile Server</string>
-    <string name="ecg_client_title">ECG Mobile Client</string>
-
-    <!-- Connection Status -->
-    <string name="connected">Status:\nConnected</string>
-    <string name="connecting">Status:\nDisconnected</string>
-    <string name="none">Status:\nDisconnected</string>
-    <string name="listen">Status:\nListening</string>
-    <string name="name_item_empty">Name is empty, please retry!</string>
-    <string name="create_new_user_failed">Create new user failed!</string>
-    <string name="male_label">male</string>
-    <string name="female_label">female</string>
-    <string name="select_valid_user">Please select a valid ecg user!</string>
-    <string name="not_recv_any_data">Don\'t have received any valid data, do nothing!</string>
-    <string name="new_user_created_debug">A new user record was created!</string>
-    <string name="target_device_not_connected">Target device is not connected!</string>
-    <string name="ID_label">ID:</string>
-    <string name="gender_label">gender:</string>
-    <string name="enroll_date_label">Enroll Date:</string>
-    <string name="age_label">Age:</string>
-    <string name="ecg_data_path_label">ECG DataPath:</string>
-        <string name="hbr_label">HBR:</string>
-    
+    <string name="ecg_client_title">ECG Mobile Control Center</string>
+    <string name="load_user_history_title">ECG User History/string>
+    <string name="rt_ecg_chart_title">Realtime ECG Chart</string>
+        
+        <!-- Connection Status -->
+	<string name="connected">Status:\nConnected</string>
+	<string name="connecting">Status:\nDisconnected</string>
+	<string name="none">Status:\nDisconnected</string>
+	<string name="listen">Status:\nListening</string>
+	<string name="name_item_empty">Name is empty, please retry!</string>
+	<string name="create_new_user_failed">Create new user failed!</string>
+	<string name="male_label">male</string>
+	<string name="female_label">female</string>
+	<string name="select_valid_user">Please select a valid ecg user!</string>
+	<string name="not_recv_any_data">Don\'t have received any valid data, do nothing!</string>
+	<string name="new_user_created_debug">A new user record was created!</string>
+	<string name="target_device_not_connected">Target device is not connected!</string>
+	<string name="ID_label">ID:</string><string name="gender_label">gender:</string>
+	<string name="enroll_date_label">Enroll Date:</string>
+	<string name="age_label">Age:</string>
+	<string name="ecg_data_path_label">ECG DataPath:</string>
+	<string name="hbr_label">HBR:</string>
+	<string name="load_history_entry">View User History Record</string>
+	<string name="rt_ecg_chart">Realtime ECG Chart</string></string>
 </resources>

@@ -9,16 +9,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/connection_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:text="@string/none" >
-        </TextView>
-
         <TextView
             android:id="@+id/patient_name"
             android:layout_width="0dp"
@@ -50,7 +40,7 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <LinearLayout
+   <LinearLayout
         android:id="@+id/ecg_control_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -63,22 +53,7 @@
             android:layout_weight="1"
             android:text="@string/load_label" >
         </Button>
-
-        <Button
-            android:id="@+id/start_stop_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/start_label" >
-        </Button>
-
-        <Button
-            android:id="@+id/save_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/save_label" >
-        </Button>
+        
     </LinearLayout>
 
 </LinearLayout>

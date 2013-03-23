@@ -21,137 +21,148 @@ public final class R {
         public static final int write_arrow=0x7f020007;
     }
     public static final class id {
-        public static final int add_user=0x7f060023;
-        public static final int button_scan=0x7f060006;
-        public static final int childImage=0x7f060000;
-        public static final int commit_input=0x7f06001a;
-        public static final int connection_status=0x7f060008;
-        public static final int date_picker=0x7f060019;
-        public static final int delete_record=0x7f06001e;
-        public static final int delete_user=0x7f06001b;
-        public static final int discoverable=0x7f060022;
-        public static final int ecg_chart=0x7f06000c;
-        public static final int ecg_control_layout=0x7f06000d;
-        public static final int ecg_info_layout=0x7f060007;
-        public static final int female_radio=0x7f060018;
-        public static final int gender_group=0x7f060015;
-        public static final int history_data_list=0x7f060011;
-        public static final int insecure_connect_scan=0x7f060021;
-        public static final int load_btn=0x7f06000e;
-        public static final int male=0x7f060016;
-        public static final int male_radio=0x7f060017;
-        public static final int name=0x7f060014;
-        public static final int new_devices=0x7f060005;
-        public static final int out_data=0x7f060012;
-        public static final int paired_devices=0x7f060003;
-        public static final int patient_hbr=0x7f06000b;
-        public static final int patient_id=0x7f06000a;
-        public static final int patient_name=0x7f060009;
-        public static final int record=0x7f06001d;
-        public static final int save_btn=0x7f060010;
-        public static final int secure_connect_scan=0x7f060020;
-        public static final int select_record=0x7f06001f;
-        public static final int select_user=0x7f06001c;
-        public static final int send_button=0x7f060013;
-        public static final int start_stop_btn=0x7f06000f;
-        public static final int textView1=0x7f060001;
-        public static final int title_new_devices=0x7f060004;
-        public static final int title_paired_devices=0x7f060002;
+        public static final int about=0x7f060022;
+        public static final int add_user=0x7f060026;
+        public static final int all_app_entry_list=0x7f060000;
+        public static final int app=0x7f060001;
+        public static final int button_scan=0x7f060008;
+        public static final int childImage=0x7f060002;
+        public static final int commit_input=0x7f06001c;
+        public static final int connection_status=0x7f060010;
+        public static final int date_picker=0x7f06001b;
+        public static final int delete_record=0x7f060020;
+        public static final int delete_user=0x7f06001d;
+        public static final int discoverable=0x7f060023;
+        public static final int ecg_chart=0x7f06000d;
+        public static final int ecg_control_layout=0x7f06000e;
+        public static final int ecg_info_layout=0x7f060009;
+        public static final int female_radio=0x7f06001a;
+        public static final int gender_group=0x7f060017;
+        public static final int history_data_list=0x7f060013;
+        public static final int insecure_connect_scan=0x7f060025;
+        public static final int load_btn=0x7f06000f;
+        public static final int male=0x7f060018;
+        public static final int male_radio=0x7f060019;
+        public static final int name=0x7f060016;
+        public static final int new_devices=0x7f060007;
+        public static final int out_data=0x7f060014;
+        public static final int paired_devices=0x7f060005;
+        public static final int patient_hbr=0x7f06000c;
+        public static final int patient_id=0x7f06000b;
+        public static final int patient_name=0x7f06000a;
+        public static final int record=0x7f06001f;
+        public static final int save_btn=0x7f060012;
+        public static final int secure_connect_scan=0x7f060024;
+        public static final int select_record=0x7f060021;
+        public static final int select_user=0x7f06001e;
+        public static final int send_button=0x7f060015;
+        public static final int start_stop_btn=0x7f060011;
+        public static final int textView1=0x7f060003;
+        public static final int title_new_devices=0x7f060006;
+        public static final int title_paired_devices=0x7f060004;
     }
     public static final class layout {
-        public static final int childrow=0x7f030000;
-        public static final int device_list=0x7f030001;
-        public static final int device_name=0x7f030002;
-        public static final int ecg_client_db=0x7f030003;
-        public static final int ecg_client_main=0x7f030004;
-        public static final int ecg_server_main=0x7f030005;
-        public static final int grouprow=0x7f030006;
-        public static final int message=0x7f030007;
-        public static final int new_user=0x7f030008;
-        public static final int select_childrow=0x7f030009;
-        public static final int select_recordrow=0x7f03000a;
+        public static final int all_app_entry_list=0x7f030000;
+        public static final int app_entry_item=0x7f030001;
+        public static final int childrow=0x7f030002;
+        public static final int device_list=0x7f030003;
+        public static final int device_name=0x7f030004;
+        public static final int ecg_client_history_records=0x7f030005;
+        public static final int ecg_client_rt_ecg=0x7f030006;
+        public static final int ecg_server_main=0x7f030007;
+        public static final int grouprow=0x7f030008;
+        public static final int message=0x7f030009;
+        public static final int new_user=0x7f03000a;
+        public static final int select_childrow=0x7f03000b;
+        public static final int select_recordrow=0x7f03000c;
     }
     public static final class menu {
         public static final int main_option_menu=0x7f050000;
-        public static final int user_manager_menu=0x7f050001;
+        public static final int realtime_ecg_option=0x7f050001;
+        public static final int server_option_menu=0x7f050002;
+        public static final int user_manager_menu=0x7f050003;
     }
     public static final class string {
-        public static final int ID_label=0x7f04002f;
+        public static final int ID_label=0x7f040032;
+        public static final int about_app=0x7f040001;
         /**  Strings for Adding new ECGUser 
  Strings for Adding new ECGUser 
          */
-        public static final int add_user=0x7f04001a;
-        public static final int age_label=0x7f040032;
+        public static final int add_user=0x7f04001b;
+        public static final int age_label=0x7f040035;
+        public static final int app_info=0x7f040002;
         public static final int app_name=0x7f040000;
-        public static final int birth_label=0x7f04001c;
-        public static final int bt_not_enabled_leaving=0x7f040002;
-        public static final int button_scan=0x7f04000c;
-        public static final int commit_new_user_info=0x7f04001d;
+        public static final int birth_label=0x7f04001d;
+        public static final int bt_not_enabled_leaving=0x7f040003;
+        public static final int button_scan=0x7f04000d;
+        public static final int commit_new_user_info=0x7f04001e;
         /**  Connection Status 
- Connection Status 
          */
-        public static final int connected=0x7f040023;
-        public static final int connecting=0x7f040024;
-        public static final int create_new_user_failed=0x7f040028;
-        public static final int delete=0x7f040016;
-        public static final int discoverable=0x7f040005;
-        public static final int ecg_client_title=0x7f040022;
-        public static final int ecg_data_path_label=0x7f040033;
-        public static final int ecg_server_title=0x7f040021;
-        public static final int enroll_date_label=0x7f040031;
+        public static final int connected=0x7f040026;
+        public static final int connecting=0x7f040027;
+        public static final int create_new_user_failed=0x7f04002b;
+        public static final int delete=0x7f040017;
+        public static final int discoverable=0x7f040006;
+        public static final int ecg_client_title=0x7f040023;
+        public static final int ecg_data_path_label=0x7f040036;
+        public static final int ecg_server_title=0x7f040022;
+        public static final int enroll_date_label=0x7f040034;
         /**  ECG user prompts 
  ECG user prompts 
          */
-        public static final int external_storage_unmounted_prompt=0x7f040018;
-        public static final int female_label=0x7f04002a;
-        public static final int gender_label=0x7f040030;
-        public static final int hbr_label=0x7f040034;
-        public static final int insecure_connect=0x7f040004;
-        public static final int listen=0x7f040026;
-        public static final int load_label=0x7f040014;
-        public static final int male_label=0x7f040029;
-        public static final int name_item_empty=0x7f040027;
-        public static final int name_label=0x7f04001b;
-        public static final int new_user_created_debug=0x7f04002d;
-        public static final int new_user_title=0x7f04001f;
-        public static final int none=0x7f040025;
-        public static final int none_found=0x7f040009;
-        public static final int none_paired=0x7f040008;
-        public static final int not_connected=0x7f040010;
-        public static final int not_recv_any_data=0x7f04002c;
-        public static final int save_label=0x7f040013;
+        public static final int external_storage_unmounted_prompt=0x7f040019;
+        public static final int female_label=0x7f04002d;
+        public static final int gender_label=0x7f040033;
+        public static final int hbr_label=0x7f040037;
+        public static final int insecure_connect=0x7f040005;
+        public static final int listen=0x7f040029;
+        public static final int load_history_entry=0x7f040038;
+        public static final int load_label=0x7f040015;
+        public static final int load_user_history_title=0x7f040024;
+        public static final int male_label=0x7f04002c;
+        public static final int name_item_empty=0x7f04002a;
+        public static final int name_label=0x7f04001c;
+        public static final int new_user_created_debug=0x7f040030;
+        public static final int new_user_title=0x7f040020;
+        public static final int none=0x7f040028;
+        public static final int none_found=0x7f04000a;
+        public static final int none_paired=0x7f040009;
+        public static final int not_connected=0x7f040011;
+        public static final int not_recv_any_data=0x7f04002f;
+        public static final int rt_ecg_chart=0x7f040039;
+        public static final int rt_ecg_chart_title=0x7f040025;
+        public static final int save_label=0x7f040014;
         /**  DeviceListActivity 
  DeviceListActivity 
          */
-        public static final int scanning=0x7f040006;
+        public static final int scanning=0x7f040007;
         /**  Options Menu 
  Options Menu 
          */
-        public static final int secure_connect=0x7f040003;
-        public static final int select=0x7f040015;
-        public static final int select_device=0x7f040007;
-        public static final int select_valid_user=0x7f04002b;
-        public static final int send=0x7f040017;
+        public static final int secure_connect=0x7f040004;
+        public static final int select=0x7f040016;
+        public static final int select_device=0x7f040008;
+        public static final int select_valid_user=0x7f04002e;
+        public static final int send=0x7f040018;
         /**  ECG control buttons 
  ECG control buttons 
          */
-        public static final int start_label=0x7f040011;
-        public static final int stop_label=0x7f040012;
-        public static final int target_device_not_connected=0x7f04002e;
-        public static final int test=0x7f040001;
+        public static final int start_label=0x7f040012;
+        public static final int stop_label=0x7f040013;
+        public static final int target_device_not_connected=0x7f040031;
         /**  Strings for Test 
  Strings for Test 
          */
-        public static final int test_connection_status=0x7f040019;
-        public static final int title_connected_to=0x7f04000e;
-        public static final int title_connecting=0x7f04000d;
-        public static final int title_not_connected=0x7f04000f;
-        public static final int title_other_devices=0x7f04000b;
-        public static final int title_paired_devices=0x7f04000a;
+        public static final int test_connection_status=0x7f04001a;
+        public static final int title_connected_to=0x7f04000f;
+        public static final int title_connecting=0x7f04000e;
+        public static final int title_not_connected=0x7f040010;
+        public static final int title_other_devices=0x7f04000c;
+        public static final int title_paired_devices=0x7f04000b;
         /**  Strings for Titles 
  Strings for Titles 
          */
-        public static final int user_manager_title=0x7f04001e;
-        public static final int view_histroy_records_title=0x7f040020;
+        public static final int user_manager_title=0x7f04001f;
+        public static final int view_histroy_records_title=0x7f040021;
     }
 }

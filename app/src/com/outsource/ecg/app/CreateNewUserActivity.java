@@ -14,6 +14,14 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
+/**
+ * This class mainly designed for guide user to create a new user to the current ECG system
+ * The layout of "new_user" contains a DatePicker for inputting birthday,
+ * an EditText for name, an radio group for selecting gender,
+ * a button for committing input
+ * @author faywong
+ *
+ */
 public class CreateNewUserActivity extends Activity {
 
 	DatePicker mDatePicker;

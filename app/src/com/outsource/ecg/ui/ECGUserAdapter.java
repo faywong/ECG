@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.outsource.ecg.R;
-import com.outsource.ecg.app.EcgClientActivity;
+import com.outsource.ecg.app.RTEcgChartActivity;
 import com.outsource.ecg.defs.ECGUser;
 import com.outsource.ecg.defs.ECGUserManager;
 
@@ -65,7 +65,7 @@ public class ECGUserAdapter extends BaseExpandableListAdapter {
 					@Override
 					public void onClick(View v) {
 						ECGUserManager.setCurrentUser(user);
-						if (EcgClientActivity.DEBUG_UI_TOAST)
+						if (RTEcgChartActivity.DEBUG_UI_TOAST)
 						Toast.makeText(context, "user" + user + " selected!", Toast.LENGTH_SHORT).show();
 						Intent intent = new Intent();
 						  intent.putExtra(ECGUserAdapter.CURRENT_USER_EXTRA, user);
@@ -100,7 +100,7 @@ public class ECGUserAdapter extends BaseExpandableListAdapter {
 				convertView.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						if (EcgClientActivity.DEBUG_UI_TOAST)
+						if (RTEcgChartActivity.DEBUG_UI_TOAST)
 						Toast.makeText(context, tempChild.get(childPosition),
 								Toast.LENGTH_SHORT).show();
 					}

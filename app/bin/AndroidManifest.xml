@@ -13,20 +13,28 @@
         android:icon="@drawable/ecg_mobile"
         android:label="@string/ecg_client_title" >
         <activity
-            android:name="com.outsource.ecg.app.EcgClientActivity"
+            android:name="com.outsource.ecg.app.MainActivity"
             android:label="@string/ecg_client_title" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.outsource.ecg.app.RTEcgChartActivity"
+            android:label="@string/rt_ecg_chart_title" >
+        </activity>
+        <activity
+            android:name="com.outsource.ecg.app.EcgLoadHistoryActivity"
+            android:label="@string/load_user_history_title" >
         </activity>
         <activity
             android:name="com.outsource.ecg.app.DeviceListActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/select_device" />
         <activity
-            android:name="com.outsource.ecg.app.ECGUserManageActivity"
+            android:name="com.outsource.ecg.app.EcgUserManageActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/user_manager_title" >
             <intent-filter>
@@ -46,7 +54,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.outsource.ecg.app.ECGUserHistroyRecordActivity"
+            android:name="com.outsource.ecg.app.EcgUserHistroyRecordActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/view_histroy_records_title" >
             <intent-filter>

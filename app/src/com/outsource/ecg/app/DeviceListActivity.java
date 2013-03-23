@@ -168,7 +168,7 @@ public class DeviceListActivity extends Activity {
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
             
-            if (EcgClientActivity.DEBUG)
+            if (RTEcgChartActivity.DEBUG)
             Log.d(TAG, "the address of device to be connected: " + address);
 
             // Set result and finish this Activity

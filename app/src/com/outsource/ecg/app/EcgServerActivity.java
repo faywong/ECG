@@ -277,7 +277,7 @@ public class EcgServerActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_option_menu, menu);
+		inflater.inflate(R.menu.server_option_menu, menu);
 		return true;
 	}
 
