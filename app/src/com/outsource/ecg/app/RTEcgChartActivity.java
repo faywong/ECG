@@ -152,9 +152,10 @@ public class RTEcgChartActivity extends Activity {
 				Toast.makeText(RTEcgChartActivity.this,
 						getString(R.string.new_user_created_debug),
 						Toast.LENGTH_SHORT).show();
-			Intent intent = new Intent(RTEcgChartActivity.this,
-					EcgUserHistroyRecordActivity.class);
-			startActivityForResult(intent, REQUEST_SELECT_HISTROY_ECG_RECORD);
+//			Intent intent = new Intent(RTEcgChartActivity.this,
+//					EcgUserHistroyRecordActivity.class);
+//			startActivityForResult(intent, REQUEST_SELECT_HISTROY_ECG_RECORD);
+			finish();
 		}
 	};
 
