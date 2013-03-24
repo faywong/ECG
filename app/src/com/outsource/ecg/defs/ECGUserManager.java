@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.afree.data.jdbc.JDBCXYDataset;
+
 import android.R.bool;
 import android.os.Environment;
 import android.util.Log;
@@ -45,6 +47,7 @@ public class ECGUserManager {
 	}
 
 	private ECGUserManager() throws Exception {
+		Log.d(TAG, "Constructor");
 		File ecgDataDir = new File(DataPath);
 		if (!ecgDataDir.exists()) {
 			boolean success = ecgDataDir.mkdir();
@@ -52,6 +55,13 @@ public class ECGUserManager {
 				throw new Exception("The ECG data dir:" + ecgDataDir
 						+ " can't be created!");
 			}
+		}
+		try {
+			//Class.forName("com.lemadi.storage.database.sqldroid.SqldroidDriver");
+			Class.forName("org.sqldroid.SQLDroidDriver");
+		} catch (ClassNotFoundException e) {
+			System.err.print("ClassNotFoundException: ");
+			System.err.println(e.getMessage());
 		}
 	}
 

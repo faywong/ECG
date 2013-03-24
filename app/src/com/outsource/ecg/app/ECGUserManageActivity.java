@@ -6,6 +6,8 @@ import android.app.ExpandableListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,6 +56,38 @@ public class EcgUserManageActivity extends ExpandableListActivity implements
 		expandbleLis.setOnChildClickListener(this);
 	}
 
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		checkExternalStorageMounted();
+	}
+
+	public void checkExternalStorageMounted() {
+		Log.d(TAG,
+				"Result: "
+						+ (Environment.MEDIA_MOUNTED != Environment
+								.getExternalStorageState()));
+		if (!Environment.getExternalStorageState().equals(
+				Environment.MEDIA_MOUNTED)) {
+			Toast.makeText(this,
+					getString(R.string.external_storage_unmounted_prompt),
+					Toast.LENGTH_SHORT).show();
+			finish();
+		} else {
+			// populate user infomation from database
+			try {
+				ECGUserManager.Instance().loadUserInfo(true);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Toast.makeText(this, "ECGUserManager.Instance() failed!",
+						Toast.LENGTH_SHORT).show();
+				finish();
+			}
+		}
+	}
+	
 	public void setGroupData() {
 		groupItem.clear();
 		childItem.clear();
@@ -124,8 +158,5 @@ public class EcgUserManageActivity extends ExpandableListActivity implements
                 Toast.makeText(this, "A new user created failed!", Toast.LENGTH_SHORT).show();
             }
         }
-
-		
 	}
-	
 }

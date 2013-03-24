@@ -19,6 +19,9 @@
 # view AndroidManifest.xml #generated:24
 -keep class com.outsource.ecg.app.RTEcgChartActivity { <init>(...); }
 
+# view AndroidManifest.xml #generated:67
+-keep class com.outsource.ecg.app.SDcardMountReceiver { <init>(...); }
+
 # view res/layout/ecg_client_history_records.xml #generated:37
 -keep class com.outsource.ecg.ui.JDBCXYChartView { <init>(...); }
 

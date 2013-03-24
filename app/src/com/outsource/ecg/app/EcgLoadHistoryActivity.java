@@ -86,39 +86,6 @@ public class EcgLoadHistoryActivity extends Activity {
 	// Member object for the ECG services
 	private EcgService mEcgService = null;
 
-	// External storage state listener
-	private final BroadcastReceiver mSdcardListener = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-
-			String action = intent.getAction();
-			Log.d("TAG", "sdcard action:::::" + action);
-			if (Intent.ACTION_MEDIA_MOUNTED.equals(action)
-					|| Intent.ACTION_MEDIA_SCANNER_STARTED.equals(action)
-					|| Intent.ACTION_MEDIA_SCANNER_FINISHED.equals(action)) {
-				// mounted
-				try {
-					ECGUserManager.Instance().loadUserInfo(true);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					Toast.makeText(context,
-							"ECGUserManager.Instance() failed!",
-							Toast.LENGTH_SHORT).show();
-					finish();
-				}
-			} else if (Intent.ACTION_MEDIA_REMOVED.equals(action)
-					|| Intent.ACTION_MEDIA_UNMOUNTED.equals(action)
-					|| Intent.ACTION_MEDIA_BAD_REMOVAL.equals(action)) {
-				// fail to mounted, do nothing
-				Toast.makeText(context, "External storage mount failed!",
-						Toast.LENGTH_SHORT).show();
-			}
-
-		}
-	};
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -140,17 +107,6 @@ public class EcgLoadHistoryActivity extends Activity {
 			finish();
 			return;
 		}
-
-		// register external storage state listener
-		IntentFilter intentFilter = new IntentFilter(
-				Intent.ACTION_MEDIA_MOUNTED);
-		intentFilter.addAction(Intent.ACTION_MEDIA_SCANNER_STARTED);
-		intentFilter.addAction(Intent.ACTION_MEDIA_SCANNER_FINISHED);
-		intentFilter.addAction(Intent.ACTION_MEDIA_REMOVED);
-		intentFilter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
-		intentFilter.addAction(Intent.ACTION_MEDIA_BAD_REMOVAL);
-		intentFilter.addDataScheme("file");
-		registerReceiver(mSdcardListener, intentFilter);
 
 		Button loadBtn = (Button) findViewById(R.id.load_btn);
 		loadBtn.setOnClickListener(new View.OnClickListener() {
@@ -247,22 +203,9 @@ public class EcgLoadHistoryActivity extends Activity {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		unregisterReceiver(mSdcardListener);
 	}
 
-	private void ensureDiscoverable() {
-		if (DEBUG)
-			Log.d(TAG, "ensure discoverable");
-		if (mBluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-			Intent discoverableIntent = new Intent(
-					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-			discoverableIntent.putExtra(
-					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-			startActivity(discoverableIntent);
-		}
-	}
-
-	private void checkExternalStorageMounted() {
+	public void checkExternalStorageMounted() {
 		Log.d(TAG,
 				"Result: "
 						+ (Environment.MEDIA_MOUNTED != Environment

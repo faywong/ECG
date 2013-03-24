@@ -199,7 +199,7 @@ public class RTEcgChartActivity extends Activity {
 			}
 		}
 	};
-
+	
 	// The Handler that gets information back from the EcgService
 	private final Handler mHandler = new Handler() {
 		@Override
