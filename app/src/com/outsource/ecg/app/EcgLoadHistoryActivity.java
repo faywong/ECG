@@ -37,18 +37,10 @@ import android.widget.Toast;
 import com.outsource.ecg.R;
 
 /**
- * This is the main entry of whole ECGClient application
+ * This is activiy used to guide user to load history record of current selected user
  * it plays several roles:
- * 1) the main activity
- * 2) start a ECGService based on several threads for bluetooth communication, currently handle receiving data
- * 3) monitor the SDCard mount/unmount event, the normally executing of this application depends on the usage of external storage of phone
- * 4) inflate two content view:
- *    4.1) "ecg_client_db" layout for a sqlite db driven chart view
- *    4.2) "ecg_client_history_records" layout for XY Serials(double value pairs, such as 0.1->1, 0.2->1.2) driven chart view
- * 5) launch other related activities(ECGUserHistroyRecordActivity for reviewing the history record of a user,) 
- *    ECGUserManageActivity for selecting a user to be the current user or showing the detail info
- *    of a specific user, deleting an existed user, adding a new user by launching CreateNewUserActivity
- *    and handle their executing results
+ * 1) guide user to select a specified record by launching "EcgUserHistroyRecordActivity"
+ * 2) display the history record chart through a customized JDBCXYChartView
  * @author faywong
  *
  */

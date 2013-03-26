@@ -348,6 +348,11 @@ public class EcgService {
 				}
 			} catch (IOException e) {
 				Log.e(TAG, "Socket Type: " + mSocketType + "listen() failed", e);
+				Message msg = mHandler.obtainMessage(RTEcgChartActivity.MESSAGE_TOAST);
+				Bundle bundle = new Bundle();
+				bundle.putString(RTEcgChartActivity.TOAST, "IOException:" + e);
+				msg.setData(bundle);
+				mHandler.sendMessage(msg);
 			}
 			mmServerSocket = tmp;
 		}
@@ -365,7 +370,15 @@ public class EcgService {
 				try {
 					// This is a blocking call and will only return on a
 					// successful connection or an exception
-					socket = mmServerSocket.accept();
+					if (null != mmServerSocket) {
+						socket = mmServerSocket.accept();
+					} else {
+						Message msg = mHandler.obtainMessage(RTEcgChartActivity.MESSAGE_TOAST);
+						Bundle bundle = new Bundle();
+						bundle.putString(RTEcgChartActivity.TOAST, "Create bluetooth socket error, please reset bluetooth!");
+						msg.setData(bundle);
+						mHandler.sendMessage(msg);
+					}
 					Log.d(TAG, "faywong server socket accepted a connection");
 				} catch (IOException e) {
 					Log.e(TAG, "Socket Type: " + mSocketType
@@ -388,7 +401,9 @@ public class EcgService {
 							// Either not ready or already connected. Terminate
 							// new socket.
 							try {
-								socket.close();
+								if (null != socket) {
+									socket.close();
+								}
 							} catch (IOException e) {
 								Log.e(TAG, "Could not close unwanted socket", e);
 							}

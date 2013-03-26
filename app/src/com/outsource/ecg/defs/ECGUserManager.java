@@ -35,6 +35,10 @@ public class ECGUserManager {
 	private static final ECGUser INVALID_USER = new ECGUser("Invalid", "Invalid", "1900-12-30", 0.0);
 	private static ECGUser mCurrentUser = INVALID_USER;
 	
+	public static final ECGUser getInvalidUser() {
+		return INVALID_USER;
+	}
+	
 	public String getDataPath() {
 		return DataPath;
 	}

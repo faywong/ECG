@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 /**
  * This class is designed to display History record of a specified user(retrieved from a sqlite database)
+ * to be selected by user
  * @author faywong
  *
  */

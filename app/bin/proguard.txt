@@ -1,25 +1,25 @@
-# view AndroidManifest.xml #generated:46
+# view AndroidManifest.xml #generated:51
 -keep class com.outsource.ecg.app.CreateNewUserActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:32
+# view AndroidManifest.xml #generated:35
 -keep class com.outsource.ecg.app.DeviceListActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:28
+# view AndroidManifest.xml #generated:30
 -keep class com.outsource.ecg.app.EcgLoadHistoryActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:56
+# view AndroidManifest.xml #generated:62
 -keep class com.outsource.ecg.app.EcgUserHistroyRecordActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:36
+# view AndroidManifest.xml #generated:40
 -keep class com.outsource.ecg.app.EcgUserManageActivity { <init>(...); }
 
 # view AndroidManifest.xml #generated:15
 -keep class com.outsource.ecg.app.MainActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:24
+# view AndroidManifest.xml #generated:25
 -keep class com.outsource.ecg.app.RTEcgChartActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:67
+# view AndroidManifest.xml #generated:74
 -keep class com.outsource.ecg.app.SDcardMountReceiver { <init>(...); }
 
 # view res/layout/ecg_client_history_records.xml #generated:37

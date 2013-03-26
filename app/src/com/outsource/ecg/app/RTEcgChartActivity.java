@@ -381,6 +381,13 @@ public class RTEcgChartActivity extends Activity {
 	}
 
 	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		ECGUserManager.setCurrentUser(ECGUserManager.getInvalidUser());
+	}
+
+	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
